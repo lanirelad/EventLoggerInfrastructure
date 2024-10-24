@@ -40,7 +40,7 @@ resource "github_repository_webhook" "webhook" {
   configuration {
     url          = "http://${linode_instance.flask_app.ip_address}:3000/webhook"  # Flask app URL
     content_type = "json"
-    secret       = var.webhookSecret        # Webhook secret for security
+    # secret       = var.webhookSecret        # Webhook secret for security
     insecure_ssl = false                     # Ensure SSL is used (set to true if testing locally)
   }
 
