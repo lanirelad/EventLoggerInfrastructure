@@ -10,7 +10,8 @@ pipeline
         INFRA_REPO = 'https://github.com/lanirelad/EventLoggerInfrastructure.git'
         LINODE_API_TOKEN = credentials('linodeToken')  
         SSH_PRIVATE_KEY = credentials('sshKey')        
-        ROOT_PASSWORD = credentials('rootPass')   
+        ROOT_PASSWORD = credentials('rootPass')
+        GIT_TOKEN = credentials('githubToken')
     }
 
     stages 
@@ -89,7 +90,8 @@ pipeline
                     terraform plan \
                     -var "linodeToken=${LINODE_API_TOKEN}" \
                     -var "sshKey=${SSH_PRIVATE_KEY}" \
-                    -var "rootPass=${ROOT_PASSWORD}"
+                    -var "rootPass=${ROOT_PASSWORD}"\
+                    -var "githubToken=${GIT_TOKEN}"
                     '''
                 }
             }
