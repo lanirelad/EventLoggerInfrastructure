@@ -38,11 +38,28 @@
       args:
         warn: false
 
+    - name: Create a directory for logs on the host
+      file:
+        path: /path/on/host/logs  # Adjust this path to your preferred location
+        state: directory
+        mode: '0755'
+
     - name: Pull Docker image for Flask app
       docker_image:
         name: your_dockerhub_username/your_flask_app_image
         tag: latest
         source: pull
+
+    - name: Run Flask app Docker container
+      docker_container:
+        name: flask-app
+        image: your_dockerhub_username/your_flask_app_image
+        state: started
+        restart_policy: always
+        volumes:
+          - /path/on/host/logs:/workingDir  # Map host directory to container's working directory
+        ports:
+          - "your_port:your_container_port"  # Map your container port to a host port
 
     - name: Create systemd service for Flask app
       template:
