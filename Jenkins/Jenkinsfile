@@ -87,7 +87,7 @@ pipeline
                 dir('Terraform') 
                 {
                     sh '''
-                    terraform plan \
+                    terraform plan -out=tfplan\
                     -var "linodeToken=${LINODE_API_TOKEN}" \
                     -var "sshKey=${SSH_PRIVATE_KEY}" \
                     -var "rootPass=${ROOT_PASSWORD}"\
