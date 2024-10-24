@@ -7,7 +7,7 @@ pipeline
         DOCKER_IMAGE = 'lanirelad/push-event-logger:latest'
         LINODE_INSTANCE_IP = '' // This will be populated by Terraform outputs
         FLASK_APP_REPO = 'https://github.com/lanirelad/push-event-logger.git'
-        INFRA_REPO = 'https://github.com/yourusername/your-infrastructure-repo.git'
+        INFRA_REPO = 'https://github.com/lanirelad/EventLoggerInfrastructure.git'
     }
 
     stages 
