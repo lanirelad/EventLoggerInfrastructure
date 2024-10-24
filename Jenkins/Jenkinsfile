@@ -17,7 +17,7 @@ pipeline
             steps 
             {
                 // Clone the Flask app repository
-                git branch: 'tester', url: "${FLASK_APP_REPO}"
+                git branch: 'main', url: "${FLASK_APP_REPO}"
             }
         }
 
