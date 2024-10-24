@@ -1,0 +1,11 @@
+version: '1.1'
+
+services:
+  flask_app:
+    image: lanirelad/push-event-logger
+    container_name: flask_app_container
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}  #  secret

@@ -1,0 +1,12 @@
+[Unit]
+Description=Flask App for Logging PUSH events
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/docker run --rm --network host your_dockerhub_username/your_flask_app_image
+WorkingDirectory=push-event-logger
+StandardOutput=journal
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

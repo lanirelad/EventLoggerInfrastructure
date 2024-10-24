@@ -1,0 +1,7 @@
+---
+- name: Configure Flask Application Environment
+  hosts: all
+  become: true
+
+  roles:
+    - logSvc

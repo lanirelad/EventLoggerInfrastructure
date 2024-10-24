@@ -1,0 +1,131 @@
+pipeline 
+{
+    agent any
+
+    environment 
+    {
+        DOCKER_IMAGE = 'lanirelad/push-event-logger:latest'
+        LINODE_INSTANCE_IP = '' // This will be populated by Terraform outputs
+        FLASK_APP_REPO = 'https://github.com/lanirelad/push-event-logger.git'
+        INFRA_REPO = 'https://github.com/yourusername/your-infrastructure-repo.git'
+    }
+
+    stages 
+    {
+        stage('Checkout Flask App Code') 
+        {
+            steps 
+            {
+                // Clone the Flask app repository
+                git branch: 'tester', url: "${FLASK_APP_REPO}"
+            }
+        }
+
+        stage('Build Docker Image') 
+        {
+            steps 
+            {
+                // Build the Docker image
+                script 
+                {
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
+            }
+        }
+
+        stage('Push Docker Image') 
+        {
+            steps 
+            {
+                // Push the image to Docker Hub
+                script 
+                {
+                    // Log in to Docker Hub
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    // Push the image
+                    sh 'docker push $DOCKER_IMAGE'
+                }
+            }
+        }
+
+        stage('Checkout Infrastructure Code') 
+        {
+            steps 
+            {
+                // Clone the infrastructure repository
+                git branch: 'main', url: "${INFRA_REPO}"
+            }
+        }
+
+        stage('Terraform Init') 
+        {
+            steps 
+            {
+                // Initialize Terraform
+                dir('Terraform') 
+                {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Plan') 
+        {
+            steps 
+            {
+                // Plan the Terraform changes
+                dir('Terraform') 
+                {
+                    sh 'terraform plan -out=tfplan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') 
+        {
+            steps 
+            {
+                // Apply the Terraform changes
+                dir('Terraform') 
+                {
+                    sh 'terraform apply -auto-approve tfplan'
+                }
+            }
+        }
+
+        stage('Get Linode IP') 
+        {
+            steps 
+            {
+                // Retrieve the Linode instance IP
+                script 
+                {
+                    LINODE_INSTANCE_IP = sh(script: 'terraform output -raw linode_public_ip', returnStdout: true).trim()
+                }
+            }
+        }
+
+        stage('Run Ansible Playbook') 
+        {
+            steps 
+            {
+                // Run the Ansible playbook to configure the Linode instance
+                dir('Ansible') {
+                    sh "ansible-playbook -i ${LINODE_INSTANCE_IP}, playbook.yml" // Adjust the playbook name accordingly
+                }
+            }
+        }
+    }
+
+    post 
+    {
+        success 
+        {
+            echo 'Deployment completed successfully!'
+        }
+        failure 
+        {
+            echo 'Deployment failed. Check the logs for details.'
+        }
+    }
+}
