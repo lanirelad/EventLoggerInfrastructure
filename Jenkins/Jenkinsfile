@@ -117,10 +117,9 @@ pipeline
             {
                 dir('Terraform') 
                 {
-                    script 
-                    {
-                        // Output all Terraform outputs to verify what is available
-                        sh 'terraform output'
+                    script {
+                        // Output all Terraform outputs and store IP in a file
+                        sh 'terraform output linode_public_ip > linode_ip.txt'
                     }
                 }
             }
@@ -131,20 +130,16 @@ pipeline
             steps 
             {
                 dir('Terraform') 
-                {  
-                    // Ensure we are in the correct directory
+                {
                     script 
                     {
-                        // Output all values as JSON and parse it
-                        def jsonOutput = sh(script: 'terraform output -json', returnStdout: true).trim()
-                        def parsedJson = readJSON text: jsonOutput
-                        LINODE_INSTANCE_IP = parsedJson.linode_public_ip.value  // Adjust key if needed
+                        LINODE_INSTANCE_IP = readFile('linode_ip.txt').trim()
                         echo "Linode Instance IP: ${LINODE_INSTANCE_IP}"
                     }
                 }
             }
         }
-        
+
         // stage('Get Linode IP') 
         // {
         //     steps 
