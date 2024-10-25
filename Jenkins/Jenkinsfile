@@ -111,6 +111,17 @@ pipeline
             }
         }
 
+        stage('Refresh Terraform State') 
+        {
+            steps 
+            {
+                dir('Terraform') 
+                {
+                    sh 'terraform refresh'
+                }
+            }
+        }
+
         stage('Get Linode IP') 
         {
             steps 
