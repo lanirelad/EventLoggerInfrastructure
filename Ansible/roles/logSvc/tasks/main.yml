@@ -1,73 +1,68 @@
 ---
 - name: Install necessary packages for Flask app
-  hosts: all
-  become: true
+  apt:
+    update_cache: yes
 
-  tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
+- name: Install Python and pip
+  apt:
+    name: 
+      - python3
+      - python3-pip
+    state: present
 
-    - name: Install Python and pip
-      apt:
-        name: 
-          - python3
-          - python3-pip
-        state: present
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
 
-    - name: Install Docker
-      apt:
-        name: docker.io
-        state: present
+- name: Install Git
+  apt:
+    name: git
+    state: present
 
-    - name: Install Git
-      apt:
-        name: git
-        state: present
+- name: Ensure Docker is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
 
-    - name: Ensure Docker is running
-      service:
-        name: docker
-        state: started
-        enabled: yes
+- name: Install Docker Compose
+  shell: |
+    curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+  args:
+    warn: false
 
-    - name: Install Docker Compose
-      shell: |
-        curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        chmod +x /usr/local/bin/docker-compose
-      args:
-        warn: false
+- name: Create a directory for logs on the host
+  file:
+    path: /var/log/push-event-logger 
+    state: directory
+    mode: '0755'
 
-    - name: Create a directory for logs on the host
-      file:
-        path: /path/on/host/logs  # Adjust this path to your preferred location
-        state: directory
-        mode: '0755'
+- name: Pull Docker image for Flask app
+  docker_image:
+    name: lanirelad/push-event-logger
+    tag: latest
+    source: pull
 
-    - name: Pull Docker image for Flask app
-      docker_image:
-        name: lanirelad/push-event-logger
-        tag: latest
-        source: pull
+- name: Run Flask app Docker container
+  docker_container:
+    name: flask-app
+    image: lanirelad/push-event-logger
+    state: started
+    restart_policy: always
+    volumes:
+      - /var/log/push-event-logger:/workingDir  
+    ports:
+      - "3000:3000"  
 
-    - name: Run Flask app Docker container
-      docker_container:
-        name: flask-app
-        image: lanirelad/push-event-logger
-        state: started
-        restart_policy: always
-        volumes:
-          - /var/log/push-event-logger:/workingDir  # Map host directory to container's working directory
-        ports:
-          - "3000:3000"  # Map your container port to a host port
+- name: Create systemd service for Flask app
+  template:
+    src: webhook.service.j2
+    dest: /etc/systemd/system/flask-app.service
 
-    - name: Create systemd service for Flask app
-      template:
-        src: webhook.service.j2
-        dest: /etc/systemd/system/flask-app.service
-
-    - name: Start and enable Flask app service
-      systemd:
-        name: flask-app.service
-        state: started
-        enabled: yes
+- name: Start and enable Flask app service
+  systemd:
+    name: flask-app.service
+    state: started
+    enabled: yes
