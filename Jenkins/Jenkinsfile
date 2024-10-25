@@ -132,13 +132,13 @@ pipeline
                     // Write the inventory file with the Linode instance's IP
                     def inventoryContent = """
                     [linode]
-                    ${env.LINODE_INSTANCE_IP} ansible_ssh_private_key_file=${SSH_PUBLIC_KEY} ansible_user=ubuntu
+                    ${LINODE_INSTANCE_IP} ansible_ssh_private_key_file=${SSH_PUBLIC_KEY} ansible_user=ubuntu
                     """
                     writeFile file: 'inventory.ini', text: inventoryContent
                 }
             }
         }
-        
+
         stage('Run Ansible Playbook') 
         {
             steps 
