@@ -134,9 +134,8 @@ pipeline
                 // Retrieve the Linode instance IP
                 script 
                 {
-                def rawOutput = sh 'terraform output linode_public_ip'
-                LINODE_INSTANCE_IP = rawOutput // Store the result directly
-                echo "Linode Instance IP: ${LINODE_INSTANCE_IP}" // Debug log to verify the IP
+                 LINODE_INSTANCE_IP = sh(script: 'terraform output linode_public_ip', returnStdout: true).trim()
+                 echo "Linode Instance IP: ${LINODE_INSTANCE_IP}" // Debug log to verify the IP
                 }
             }
         }
