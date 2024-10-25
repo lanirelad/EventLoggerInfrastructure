@@ -162,7 +162,7 @@ pipeline
                     // Write the inventory file with the Linode instance's IP
                     def inventoryContent = """
                     [linode]
-                    ${LINODE_INSTANCE_IP} ansible_user=ubuntu
+                    ${LINODE_INSTANCE_IP} ansible_user=root
                     """
                     writeFile file: 'inventory.ini', text: inventoryContent
                 }
