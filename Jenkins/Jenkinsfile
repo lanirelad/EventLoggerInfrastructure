@@ -119,6 +119,7 @@ pipeline
                 script 
                 {
                     LINODE_INSTANCE_IP = sh(script: 'terraform output -raw linode_public_ip', returnStdout: true).trim()
+                    echo "Linode Instance IP: ${LINODE_INSTANCE_IP}" // Debug log to verify the IP
                 }
             }
         }
@@ -132,7 +133,7 @@ pipeline
                     // Write the inventory file with the Linode instance's IP
                     def inventoryContent = """
                     [linode]
-                    ${LINODE_INSTANCE_IP} ansible_ssh_private_key_file=${SSH_PUBLIC_KEY} ansible_user=ubuntu
+                    ${LINODE_INSTANCE_IP} ansible_user=ubuntu
                     """
                     writeFile file: 'inventory.ini', text: inventoryContent
                 }
