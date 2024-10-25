@@ -34,7 +34,7 @@ provider "github" {
 
 # GitHub Webhook creation
 resource "github_repository_webhook" "webhook" {
-  repository = "https://github.com/lanirelad/push-event-logger.git"  # Name of the GitHub repository
+  repository = "push-event-logger"  # Name of the GitHub repository
   configuration {
     url          = "http://${linode_instance.flask_app.ip_address}:3000/webhook"  # Flask app URL
     content_type = "json"

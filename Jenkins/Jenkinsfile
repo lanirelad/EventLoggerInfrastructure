@@ -79,16 +79,6 @@ pipeline
             }
         }
 
-        stage('print SSH Key ') 
-        {
-            steps 
-            {
-                script 
-                {
-                    echo "SSH Key Format: ${SSH_PUBLIC_KEY}..." 
-                }
-            }
-        }
         stage('Terraform Plan') 
         {
             steps 
