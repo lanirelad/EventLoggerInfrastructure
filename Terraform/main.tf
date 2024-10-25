@@ -22,10 +22,7 @@ resource "linode_instance" "flask_app" {
   authorized_keys = [var.sshKey]          # SSH key for access
 }
 
-# Output the public IP of the Linode instance
-output "linode_public_ip" {
-  value = linode_instance.flask_app.ip_address
-}
+
 
 # GitHub provider for creating the Webhook
 provider "github" {
