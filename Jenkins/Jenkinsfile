@@ -79,14 +79,13 @@ pipeline
             }
         }
 
-        stage('Verify SSH Key Format') 
+        stage('print SSH Key ') 
         {
             steps 
             {
                 script 
                 {
-                    def formattedKey = SSH_PUBLIC_KEY.trim().replaceAll("\\n", " ")
-                    echo "SSH Key Format: ${formattedKey.take(40)}..." // Print only the first 40 characters
+                    echo "SSH Key Format: ${SSH_PUBLIC_KEY.take(40)}..." // Print only the first 40 characters
                 }
             }
         }
@@ -98,7 +97,7 @@ pipeline
                 dir('Terraform') 
                 {
                     
-                    def formattedKey = SSH_PUBLIC_KEY.trim().replaceAll("\\n", " ")
+                    
                     sh '''
                     terraform plan -out=tfplan\
                     -var "linodeToken=${LINODE_API_TOKEN}" \
