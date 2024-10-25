@@ -19,8 +19,6 @@ resource "linode_instance" "flask_app" {
   image      = "linode/ubuntu24.04"       # Base image (Ubuntu 20.04)
   root_pass  = var.rootPass               # Root password for the instance
   tags       = ["flask", "github-webhook"] # Tags for identifying the instance
-
-  # define instance sizing
   authorized_keys = [var.sshKey]          # SSH key for access
 }
 

@@ -9,7 +9,7 @@ pipeline
         FLASK_APP_REPO = 'https://github.com/lanirelad/push-event-logger.git'
         INFRA_REPO = 'https://github.com/lanirelad/EventLoggerInfrastructure.git'
         LINODE_API_TOKEN = credentials('linodeToken')  
-        SSH_PRIVATE_KEY = credentials('sshKey')        
+        SSH_PUBLIC_KEY = credentials('sshKey')        
         ROOT_PASSWORD = credentials('rootPass')
         GIT_TOKEN = credentials('githubToken')
     }
@@ -89,7 +89,7 @@ pipeline
                     sh '''
                     terraform plan -out=tfplan\
                     -var "linodeToken=${LINODE_API_TOKEN}" \
-                    -var "sshKey=${SSH_PRIVATE_KEY}" \
+                    -var "sshKey=${SSH_PUBLIC_KEY}" \
                     -var "rootPass=${ROOT_PASSWORD}"\
                     -var "githubToken=${GIT_TOKEN}"
                     '''
