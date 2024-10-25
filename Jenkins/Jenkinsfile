@@ -111,6 +111,22 @@ pipeline
             }
         }
 
+        stage('Debug Terraform Outputs') 
+        {
+            steps 
+            {
+                dir('Terraform') 
+                {
+                    script 
+                    {
+                        // Output all Terraform outputs to verify what is available
+                        sh 'terraform output'
+                    }
+                }
+            }
+        }
+
+
         stage('Get Linode IP') 
         {
             steps 
@@ -118,6 +134,7 @@ pipeline
                 // Retrieve the Linode instance IP
                 script 
                 {
+                    sleep(time: 5, unit: 'SECONDS') // Optional sleep to allow state to settle
                     LINODE_INSTANCE_IP = sh(script: 'terraform output -raw linode_public_ip', returnStdout: true).trim()
                     echo "Linode Instance IP: ${LINODE_INSTANCE_IP}" // Debug log to verify the IP
                 }
