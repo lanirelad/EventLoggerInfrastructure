@@ -85,7 +85,7 @@ pipeline
             {
                 script 
                 {
-                    echo "SSH Key Format: ${SSH_PUBLIC_KEY.take(40)}..." // Print only the first 40 characters
+                    echo "SSH Key Format: ${SSH_PUBLIC_KEY}..." 
                 }
             }
         }
