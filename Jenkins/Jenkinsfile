@@ -129,7 +129,7 @@ pipeline
             {
                 // Run the Ansible playbook to configure the Linode instance
                 dir('Ansible') {
-                    sh "ansible-playbook -i ${LINODE_INSTANCE_IP}, playbook.yml" // Adjust the playbook name accordingly
+                    sh "ansible-playbook -i '${LINODE_INSTANCE_IP},' playbook.yml" // Adjust the playbook name accordingly
                 }
             }
         }
