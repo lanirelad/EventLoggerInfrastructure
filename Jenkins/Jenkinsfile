@@ -135,6 +135,7 @@ pipeline
                 }
             }
         }
+
         stage('Get Linode IP') 
         {
             steps 
@@ -180,8 +181,7 @@ pipeline
                 script 
                 {
                     sh '''
-                        PUB_KEY=$(cat /home/vagrant/.ssh/id_ed25519.pub)
-                        ssh root@${LINODE_INSTANCE_IP} "echo $PUB_KEY >> ~/.ssh/authorized_keys"
+                        echo ${ROOT_PASSWORD} | ssh-copy-id root@${LINODE_INSTANCE_IP}
                     '''
                 }
             }
