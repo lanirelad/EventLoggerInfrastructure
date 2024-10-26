@@ -145,11 +145,12 @@ pipeline
         {
             steps
             {
-                script {
-                    // Output all Terraform outputs and store IP in a file
-                    sh """\
-                    echo ${ROOT_PASSWORD} | ssh-copy-id root@${LINODE_INSTANCE_IP}\
-                    """
+                script 
+                {
+                    withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
+                    {
+                        sh 'echo ${ROOT_PASSWORD} | ssh-copy-id root@${LINODE_INSTANCE_IP}'
+                    }
                 }
             }
         }
