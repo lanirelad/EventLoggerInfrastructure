@@ -141,16 +141,17 @@ pipeline
             }
         }
 
-        stage('Copy public SSH key')
+        stage('Copy public SSH key') 
         {
-            steps
+            steps 
             {
                 script 
                 {
                     withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
                     {
-                        sh """\
-                        echo \${ROOT_PASSWORD} | ssh-copy-id root@${LINODE_INSTANCE_IP}\
+                        sh """ \
+                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> ~/.ssh/known_hosts \
+                        echo \${ROOT_PASSWORD} | ssh-copy-id root@${LINODE_INSTANCE_IP} \
                         """
                     }
                 }
