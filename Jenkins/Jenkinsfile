@@ -163,11 +163,11 @@ pipeline
                 script 
                 {
                     // Create the .ssh directory if it doesn't exist
-                    sh '''
+                    sh """
                         mkdir -p /var/lib/jenkins/.ssh
-                        echo ${LINODE_INSTANCE_IP}
-                        ssh-keyscan ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts
-                    '''
+                        echo "${LINODE_INSTANCE_IP}"
+                        ssh-keyscan "${LINODE_INSTANCE_IP}" >> /var/lib/jenkins/.ssh/known_hosts
+                    """
                 }
             }
         }
