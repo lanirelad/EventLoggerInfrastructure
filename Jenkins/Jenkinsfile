@@ -152,7 +152,7 @@ pipeline
                     ${LINODE_INSTANCE_IP} 
 
                     [linode:vars]
-                    ansible_user=root
+                    ansible_ssh_user=root
                     """
                     writeFile file: 'inventory.ini', text: inventoryContent
                 }
