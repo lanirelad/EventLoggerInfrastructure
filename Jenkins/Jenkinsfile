@@ -173,6 +173,48 @@ pipeline
             }
         }
 
+        stage('Copy Public Key to Authorized Keys') 
+        {
+            steps 
+            {
+                script 
+                {
+                    sh '''
+                        PUB_KEY=$(cat /home/vagrant/.ssh/id_ed25519.pub)
+                        ssh root@${LINODE_INSTANCE_IP} "echo $PUB_KEY >> ~/.ssh/authorized_keys"
+                    '''
+                }
+            }
+        }
+
+        // stage('Setup Authorized Keys') 
+        // {
+        //     steps 
+        //     {
+        //         dir('Ansible') 
+        //         {
+        //             script {
+        //                 def pubKeyContent = readFile('/home/vagrant/.ssh/id_ed25519.pub').trim()
+        //                 // Create a temporary playbook file to add the public key
+        //                 def addKeyPlaybook = """
+        //                 - name: Add public key to authorized_keys
+        //                   hosts: linode
+        //                   become: true
+        //                   tasks:
+        //                     - name: Ensure public key is in authorized_keys
+        //                       ansible.builtin.authorized_key:
+        //                         user: root
+        //                         key: "${pubKeyContent}"
+        //                 """
+        //                 writeFile file: 'add_key.yml', text: addKeyPlaybook
+        //                 // Run the temporary playbook to add the public key
+        //                 sh "ansible-playbook -i ../inventory.ini add_key.yml"
+        //             }
+        //         }
+        //     }
+        // }
+
+
         stage('Run Ansible Playbook') 
         {
             steps 
