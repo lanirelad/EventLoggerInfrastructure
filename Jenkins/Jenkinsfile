@@ -149,9 +149,14 @@ pipeline
                 {
                     withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
                     {
-                        sh """ 
-                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts 
-                        echo "\${ROOT_PASSWORD}" | ssh-copy-id root@${LINODE_INSTANCE_IP} 
+                        // First, add the host to known_hosts
+                        sh """
+                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts
+                        """
+
+                        // Then, copy the public SSH key to the remote instance
+                        sh """
+                        echo "\${ROOT_PASSWORD}" | ssh-copy-id root@${LINODE_INSTANCE_IP}
                         """
                     }
                 }
