@@ -1,6 +1,6 @@
 ---
 - name: Configure Flask Application Environment
-  hosts: all
+  hosts: linode
   become: true
   roles:
     - logSvc
