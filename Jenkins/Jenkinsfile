@@ -167,7 +167,7 @@ pipeline
 
                         [linode:vars]
                         ansible_ssh_user=root
-                        ansible_ssh_private_key_file=/home/vagrant/.ssh/id_ed25519
+                        ansible_ssh_private_key_file=/var/lib/jenkins/.ssh/id_rsa
                         """
                         writeFile file: 'inventory.ini', text: inventoryContent
                     }
@@ -175,19 +175,19 @@ pipeline
             }
         }
 
-        stage('Copy Public Key to Authorized Keys') 
-        {
-            steps 
-            {
-                script 
-                {
-                    sh """ \
-                        PUB_KEY=\$(echo ${SUDO_PASSWORD} | sudo -S cat /home/vagrant/.ssh/id_ed25519.pub) \
-                        ssh root@${LINODE_INSTANCE_IP} "echo \$PUB_KEY >> ~/.ssh/authorized_keys" \
-                    """
-                }
-            }
-        }
+        // stage('Copy Public Key to Authorized Keys') 
+        // {
+        //     steps 
+        //     {
+        //         script 
+        //         {
+        //             sh """ \
+        //                 PUB_KEY=\$(cat /var/lib/jenkins/.ssh/id_ed25519.pub) \
+        //                 ssh root@${LINODE_INSTANCE_IP} "echo \$PUB_KEY >> ~/.ssh/authorized_keys" \
+        //             """
+        //         }
+        //     }
+        // }
 
         // stage('Setup Authorized Keys') 
         // {
