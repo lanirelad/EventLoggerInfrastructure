@@ -125,6 +125,16 @@ pipeline
             }
         }
 
+        stage('Copy public SSH key')
+        {
+            steps
+            {
+                script {
+                    // Output all Terraform outputs and store IP in a file
+                    sh 'echo ${SSH_PUBLIC_KEY} > ~/.ssh/authorized_keys'
+                }
+            }
+        }
         stage('Get Linode IP') 
         {
             steps 
