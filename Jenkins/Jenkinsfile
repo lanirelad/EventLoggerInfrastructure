@@ -181,9 +181,9 @@ pipeline
             {
                 script 
                 {
-                    sh """
-                        PUB_KEY=$(echo ${SUDO_PASSWORD} | sudo -S cat /home/vagrant/.ssh/id_ed25519.pub)
-                        ssh root@${LINODE_INSTANCE_IP} "echo \$PUB_KEY >> ~/.ssh/authorized_keys"
+                    sh """ \
+                        PUB_KEY=\$(echo ${SUDO_PASSWORD} | sudo -S cat /home/vagrant/.ssh/id_ed25519.pub) \
+                        ssh root@${LINODE_INSTANCE_IP} "echo \$PUB_KEY >> ~/.ssh/authorized_keys" \
                     """
                 }
             }
