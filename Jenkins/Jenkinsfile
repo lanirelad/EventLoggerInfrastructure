@@ -181,7 +181,7 @@ pipeline
                 script 
                 {
                     sh '''
-                        echo ${ROOT_PASSWORD} | ssh-copy-id root@${LINODE_INSTANCE_IP}
+                        echo "${ROOT_PASSWORD}" | ssh-copy-id root@"${LINODE_INSTANCE_IP}"
                     '''
                 }
             }
