@@ -154,18 +154,21 @@ pipeline
         {
             steps 
             {
-                script 
+                dir('Ansible')
                 {
-                    // Write the inventory file with the Linode instance's IP
-                    def inventoryContent = """
-                    [linode]
-                    ${LINODE_INSTANCE_IP} 
+                    script 
+                    {
+                        // Write the inventory file with the Linode instance's IP
+                        def inventoryContent = """
+                        [linode]
+                        ${LINODE_INSTANCE_IP} 
 
-                    [linode:vars]
-                    ansible_ssh_user=root
-                    ansible_ssh_private_key_file=/home/vagrant/.ssh/id_ed25519
-                    """
-                    writeFile file: 'inventory.ini', text: inventoryContent
+                        [linode:vars]
+                        ansible_ssh_user=root
+                        ansible_ssh_private_key_file=/home/vagrant/.ssh/id_ed25519
+                        """
+                        writeFile file: 'inventory.ini', text: inventoryContent
+                    }
                 }
             }
         }

@@ -3,8 +3,7 @@ Description=Flask App for Logging PUSH events
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/docker run --rm --network host your_dockerhub_username/your_flask_app_image
-WorkingDirectory=push-event-logger
+ExecStart=/usr/bin/docker run --rm --network host lanirelad/push-event-logger
 StandardOutput=journal
 Restart=always
 
