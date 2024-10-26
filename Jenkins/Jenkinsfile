@@ -12,6 +12,7 @@ pipeline
         SSH_PUBLIC_KEY = credentials('sshKey')        
         ROOT_PASSWORD = credentials('rootPass')
         GIT_TOKEN = credentials('githubToken')
+        SUDO_PASSWORD = credentials('sudoPass')
     }
 
     stages 
@@ -181,7 +182,7 @@ pipeline
                 script 
                 {
                     sh '''
-                        PUB_KEY=$(echo ${ROOT_PASSWORD} | sudo -S cat /home/vagrant/.ssh/id_ed25519.pub)
+                        PUB_KEY=$(echo ${SUDO_PASSWORD} | sudo -S cat /home/vagrant/.ssh/id_ed25519.pub)
                         ssh root@${LINODE_INSTANCE_IP} "echo $PUB_KEY >> ~/.ssh/authorized_keys"
                     '''
                 }
