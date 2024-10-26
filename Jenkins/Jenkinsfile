@@ -149,34 +149,37 @@ pipeline
                     // Write the inventory file with the Linode instance's IP
                     def inventoryContent = """
                     [linode]
-                    ${LINODE_INSTANCE_IP} ansible_user=root
+                    ${LINODE_INSTANCE_IP} 
+
+                    [linode:vars]
+                    ansible_user=root
                     """
                     writeFile file: 'inventory.ini', text: inventoryContent
                 }
             }
         }
 
-        stage('Setup SSH Key and Known Hosts') 
-        {
-            steps 
-            {
-                script 
-                {
-                    // Store SSH key as a file
-                    withCredentials([string(credentialsId: 'privateSSH', variable: 'SSH_PRIVATE_KEY')]) 
-                    {
-                        writeFile file: '/var/lib/jenkins/.ssh/id_rsa', text: SSH_PRIVATE_KEY
-                        sh 'chmod 600 /var/lib/jenkins/.ssh/id_rsa'
-                    }
+        // stage('Setup SSH Key and Known Hosts') 
+        // {
+        //     steps 
+        //     {
+        //         script 
+        //         {
+        //             // Store SSH key as a file
+        //             withCredentials([string(credentialsId: 'privateSSH', variable: 'SSH_PRIVATE_KEY')]) 
+        //             {
+        //                 writeFile file: '/var/lib/jenkins/.ssh/id_rsa', text: SSH_PRIVATE_KEY
+        //                 sh 'chmod 600 /var/lib/jenkins/.ssh/id_rsa'
+        //             }
 
-                    // Add the remote host to known_hosts
-                    sh """
-                        mkdir -p /var/lib/jenkins/.ssh
-                        ssh-keyscan -H "${LINODE_INSTANCE_IP}" >> /var/lib/jenkins/.ssh/known_hosts
-                    """
-                }
-            }
-        }
+        //             // Add the remote host to known_hosts
+        //             sh """
+        //                 mkdir -p /var/lib/jenkins/.ssh
+        //                 ssh-keyscan -H "${LINODE_INSTANCE_IP}" >> /var/lib/jenkins/.ssh/known_hosts
+        //             """
+        //         }
+        //     }
+        // }
 
         stage('Run Ansible Playbook') 
         {
@@ -185,7 +188,7 @@ pipeline
                 // Run the Ansible playbook to configure the Linode instance
                 dir('Ansible') 
                 {
-                    sh "ansible-playbook -i ../inventory.ini playbook.yml --private-key /var/lib/jenkins/.ssh/id_rsa"
+                    sh "ansible-playbook -i ../inventory.ini playbook.yml" // --private-key /var/lib/jenkins/.ssh/id_rsa"
                 }
             }
         }
