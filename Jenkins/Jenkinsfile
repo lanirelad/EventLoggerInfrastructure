@@ -156,17 +156,23 @@ pipeline
             }
         }
 
-        stage('Setup Known Hosts') 
+        stage('Setup SSH Key and Known Hosts') 
         {
             steps 
             {
                 script 
                 {
-                    // Create the .ssh directory if it doesn't exist
+                    // Store SSH key as a file
+                    withCredentials([string(credentialsId: 'privateSSH', variable: 'SSH_PRIVATE_KEY')]) 
+                    {
+                        writeFile file: '/var/lib/jenkins/.ssh/id_rsa', text: SSH_PRIVATE_KEY
+                        sh 'chmod 600 /var/lib/jenkins/.ssh/id_rsa'
+                    }
+
+                    // Add the remote host to known_hosts
                     sh """
                         mkdir -p /var/lib/jenkins/.ssh
-                        echo "${LINODE_INSTANCE_IP}"
-                        ssh-keyscan "${LINODE_INSTANCE_IP}" >> /var/lib/jenkins/.ssh/known_hosts
+                        ssh-keyscan -H "${LINODE_INSTANCE_IP}" >> /var/lib/jenkins/.ssh/known_hosts
                     """
                 }
             }
@@ -179,7 +185,7 @@ pipeline
                 // Run the Ansible playbook to configure the Linode instance
                 dir('Ansible') 
                 {
-                    sh "ansible-playbook -i ../inventory.ini playbook.yml --private-key /home/vagrant/.ssh/id_rsa"
+                    sh "ansible-playbook -i ../inventory.ini playbook.yml --private-key /var/lib/jenkins/.ssh/id_rsa"
                 }
             }
         }
