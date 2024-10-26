@@ -150,7 +150,7 @@ pipeline
                     withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
                     {
                         sh """ \
-                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts ; \
+                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts \
                         echo "\${ROOT_PASSWORD}" | ssh-copy-id root@${LINODE_INSTANCE_IP} \
                         """
                     }
