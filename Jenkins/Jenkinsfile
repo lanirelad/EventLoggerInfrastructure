@@ -119,7 +119,7 @@ pipeline
                 {
                     script {
                         // Output all Terraform outputs and store IP in a file
-                        sh 'terraform output linode_public_ip > linode_ip.txt'
+                        sh 'terraform output -raw linode_public_ip > linode_ip.txt'
                     }
                 }
             }
@@ -139,19 +139,6 @@ pipeline
                 }
             }
         }
-
-        // stage('Get Linode IP') 
-        // {
-        //     steps 
-        //     {
-        //         // Retrieve the Linode instance IP
-        //         script 
-        //         {
-        //          LINODE_INSTANCE_IP = sh(script: 'terraform output linode_public_ip', returnStdout: true).trim()
-        //          echo "Linode Instance IP: ${LINODE_INSTANCE_IP}" // Debug log to verify the IP
-        //         }
-        //     }
-        // }
 
         stage('Create Ansible Inventory') 
         {
