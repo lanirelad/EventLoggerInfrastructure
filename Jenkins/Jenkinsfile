@@ -153,6 +153,7 @@ pipeline
 
                     [linode:vars]
                     ansible_ssh_user=root
+                    ansible_ssh_private_key_file=/home/vagrant/.ssh/id_ed25519.pub
                     """
                     writeFile file: 'inventory.ini', text: inventoryContent
                 }
