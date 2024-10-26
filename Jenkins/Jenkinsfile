@@ -163,7 +163,7 @@ pipeline
                 // Run the Ansible playbook to configure the Linode instance
                 dir('Ansible') 
                 {
-                    sh "ansible-playbook -i inventory.ini playbook.yml"
+                    sh "ansible-playbook -i ../inventory.ini playbook.yml"
                 }
             }
         }
