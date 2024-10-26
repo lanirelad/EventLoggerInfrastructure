@@ -181,7 +181,8 @@ pipeline
                 script 
                 {
                     sh '''
-                        echo "${ROOT_PASSWORD}" | ssh-copy-id root@172.232.216.70
+                        PUB_KEY=$(sudo cat /home/vagrant/.ssh/id_ed25519.pub)
+                        ssh root@${LINODE_INSTANCE_IP} "echo $PUB_KEY >> ~/.ssh/authorized_keys"
                     '''
                 }
             }
