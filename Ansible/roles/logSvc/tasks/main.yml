@@ -42,8 +42,9 @@
 - name: Check if Flask app container is running
   docker_container:
     name: flask-app
-    state: stopped
+    state: started  
   register: container_status
+  ignore_errors: true
 
 - name: Stop the existing Flask app container if it is running
   docker_container:
