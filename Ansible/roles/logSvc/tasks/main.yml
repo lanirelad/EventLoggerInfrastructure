@@ -40,7 +40,7 @@
     mode: '0755'
 
 - name: Check if port 3000 is in use
-  command: lsof -i :3000
+  command: lsof -t -i :3000
   register: port_check
   ignore_errors: true  # Ignore errors if the port is not in use
 
