@@ -156,7 +156,7 @@ pipeline
                         
                         // Manually copy the public key to authorized_keys on the remote server
                         sh """
-                        echo "\${ROOT_PASSWORD}" | ssh root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
+                        echo "\${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
                         """
                     }
                 }
