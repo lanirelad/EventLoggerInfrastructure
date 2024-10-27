@@ -151,12 +151,12 @@ pipeline
                     {
                         // First, add the host to known_hosts
                         sh """
-                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts
+                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
                         
                         // Manually copy the public key to authorized_keys on the remote server
                         sh """
-                        echo "\${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
+                        echo "\${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no -v root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
                         """
                     }
                 }
