@@ -153,10 +153,10 @@ pipeline
                         sh """
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts
                         """
-
-                        // Then, copy the public SSH key to the remote instance echo "\${ROOT_PASSWORD}" | ssh-copy-id root@${LINODE_INSTANCE_IP}
+                        
+                        // Manually copy the public key to authorized_keys on the remote server
                         sh """
-                            sshpass -p "${ROOT_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP}
+                        echo "\${ROOT_PASSWORD}" | ssh root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
                         """
                     }
                 }
