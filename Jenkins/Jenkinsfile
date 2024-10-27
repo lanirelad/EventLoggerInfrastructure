@@ -154,9 +154,9 @@ pipeline
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts
                         """
 
-                        // Then, copy the public SSH key to the remote instance
+                        // Then, copy the public SSH key to the remote instance echo "\${ROOT_PASSWORD}" | ssh-copy-id root@${LINODE_INSTANCE_IP}
                         sh """
-                        echo "\${ROOT_PASSWORD}" | ssh-copy-id root@${LINODE_INSTANCE_IP}
+                            sshpass -p "${ROOT_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP}
                         """
                     }
                 }
