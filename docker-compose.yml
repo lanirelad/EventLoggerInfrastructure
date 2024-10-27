@@ -1,4 +1,4 @@
-version: '1.1'
+version: '3.8'
 
 services:
   flask_app:
@@ -9,3 +9,13 @@ services:
     restart: always
     environment:
       - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}  #  secret
+    volumes:
+      - flask-logs:/workingDir
+
+volumes:
+  flask-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/log/push-event-logger  # Path where your logs are stored
