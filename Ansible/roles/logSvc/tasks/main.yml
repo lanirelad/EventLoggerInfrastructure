@@ -44,9 +44,10 @@
   register: port_check
   ignore_errors: true  # Ignore errors if the port is not in use
 
-- name: Stop the process using port 3000 if it exists
-  command: "kill -9 {{ port_check.stdout }}"
-  when: port_check.rc == 0 and port_check.stdout | length > 0
+- name: Stop all processes using port 3000 if any exist
+  command: "kill -9 {{ item }}"
+  with_items: "{{ port_check.stdout_lines }}"
+  when: port_check.rc == 0 and port_check.stdout_lines | length > 0
 
 - name: Pull Docker image for Flask app
   docker_image:
