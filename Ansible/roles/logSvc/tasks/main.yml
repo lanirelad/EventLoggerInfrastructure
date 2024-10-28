@@ -68,7 +68,6 @@
     name: lanirelad/push-event-logger
     tag: latest
     source: pull
-    force: yes
 
 - name: Run Flask app Docker container
   docker_container:
