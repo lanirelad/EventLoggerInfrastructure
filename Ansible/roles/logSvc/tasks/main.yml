@@ -68,11 +68,12 @@
     name: lanirelad/push-event-logger
     tag: latest
     source: pull
+    force: yes
 
 - name: Run Flask app Docker container
   docker_container:
     name: flask-app
-    image: lanirelad/push-event-logger
+    image: lanirelad/push-event-logger:latest
     state: started
     restart_policy: always
     volumes:
