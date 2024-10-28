@@ -5,7 +5,7 @@ pipeline
     environment 
     {
         DOCKER_IMAGE = 'lanirelad/push-event-logger:latest'
-        LINODE_INSTANCE_IP = '' // This will be populated by Terraform outputs
+        LINODE_INSTANCE_IP = '' // This will be populated further on the page
         FLASK_APP_REPO = 'https://github.com/lanirelad/push-event-logger.git'
         INFRA_REPO = 'https://github.com/lanirelad/EventLoggerInfrastructure.git'
         LINODE_API_TOKEN = credentials('linodeToken')  
@@ -21,7 +21,7 @@ pipeline
         {
             steps 
             {
-                // Clone the Flask app repository
+                // clone the Flask app repository
                 git branch: 'main', url: "${FLASK_APP_REPO}"
             }
         }
@@ -30,7 +30,7 @@ pipeline
         {
             steps 
             {
-                // Build the Docker image
+                // build the Docker image
                 script 
                 {
                     sh 'docker build -t $DOCKER_IMAGE .'
@@ -42,17 +42,17 @@ pipeline
         {
             steps 
             {
-                // Push the image to Docker Hub
+                // psh the image to Docker Hub
                 script 
                 {
-                    // Using withCredentials to bind Docker Hub credentials
+                    // using withCredentials to bind Docker Hub credentials
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                       usernameVariable: 'DOCKER_USERNAME', 
                                                       passwordVariable: 'DOCKER_PASSWORD')]) 
                     {
-                        // Log in to Docker Hub
+                        // log in to Docker Hub
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                        // Push the image
+                        // push the image
                         sh 'docker push $DOCKER_IMAGE'
                     }
                 }
@@ -63,7 +63,7 @@ pipeline
         {
             steps 
             {
-                // Clone the infrastructure repository
+                // clone the infrastructure repository
                 git branch: 'main', url: "${INFRA_REPO}"
             }
         }
@@ -72,7 +72,7 @@ pipeline
         {
             steps 
             {
-                // Initialize Terraform
+                // initialize Terraform
                 dir('Terraform') 
                 {
                     sh 'terraform init'
@@ -84,7 +84,7 @@ pipeline
         {
             steps 
             {
-                // Plan the Terraform changes
+                // plan the Terraform changes
                 dir('Terraform') 
                 {
                     
@@ -104,7 +104,7 @@ pipeline
         {
             steps 
             {
-                // Apply the Terraform changes
+                // apply the Terraform changes
                 dir('Terraform') 
                 {
                     sh 'terraform apply -auto-approve tfplan'
@@ -119,7 +119,7 @@ pipeline
                 dir('Terraform') 
                 {
                     script {
-                        // Output all Terraform outputs and store IP in a file
+                        // output all Terraform outputs and store IP in a file
                         sh 'terraform output -raw linode_public_ip > linode_ip.txt'
                     }
                 }
@@ -149,12 +149,12 @@ pipeline
                 {
                     withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
                     {
-                        // First, add the host to known_hosts
+                        // add host to known_hosts
                         sh """
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
                         
-                        // Manually copy the public key to authorized_keys on the remote server
+                        // copy the public key to authorized_keys on the remote server
                         sh """
                         echo "\${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no -v root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
                         """
@@ -171,7 +171,7 @@ pipeline
                 {
                     script 
                     {
-                        // Write the inventory file with the Linode instance's IP
+                        // write the inventory dynamically
                         def inventoryContent = """
                         [linode]
                         ${LINODE_INSTANCE_IP} 
@@ -186,53 +186,11 @@ pipeline
             }
         }
 
-        // stage('Copy Public Key to Authorized Keys') 
-        // {
-        //     steps 
-        //     {
-        //         script 
-        //         {
-        //             sh """ \
-        //                 PUB_KEY=\$(cat /var/lib/jenkins/.ssh/id_ed25519.pub) \
-        //                 ssh root@${LINODE_INSTANCE_IP} "echo \$PUB_KEY >> ~/.ssh/authorized_keys" \
-        //             """
-        //         }
-        //     }
-        // }
-
-        // stage('Setup Authorized Keys') 
-        // {
-        //     steps 
-        //     {
-        //         dir('Ansible') 
-        //         {
-        //             script {
-        //                 def pubKeyContent = readFile('/home/vagrant/.ssh/id_ed25519.pub').trim()
-        //                 // Create a temporary playbook file to add the public key
-        //                 def addKeyPlaybook = """
-        //                 - name: Add public key to authorized_keys
-        //                   hosts: linode
-        //                   become: true
-        //                   tasks:
-        //                     - name: Ensure public key is in authorized_keys
-        //                       ansible.builtin.authorized_key:
-        //                         user: root
-        //                         key: "${pubKeyContent}"
-        //                 """
-        //                 writeFile file: 'add_key.yml', text: addKeyPlaybook
-        //                 // Run the temporary playbook to add the public key
-        //                 sh "ansible-playbook -i ../inventory.ini add_key.yml"
-        //             }
-        //         }
-        //     }
-        // }
-
-
         stage('Run Ansible Playbook') 
         {
             steps 
             {
-                // Run the Ansible playbook to configure the Linode instance
+                // run Ansible playbook to configure the Linode instance
                 dir('Ansible') 
                 {
                     sh "ansible-playbook -i ./inventory.ini playbook.yml -vvv"
