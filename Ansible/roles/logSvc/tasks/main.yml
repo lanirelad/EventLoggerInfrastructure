@@ -39,15 +39,20 @@
     state: directory
     mode: '0755'
 
-- name: Check if port 3000 is in use
-  command: lsof -t -i :3000
-  register: port_check
-  ignore_errors: true  # Ignore errors if the port is not in use
+# - name: Check if port 3000 is in use
+#   command: lsof -t -i :3000
+#   register: port_check
+#   ignore_errors: true  # Ignore errors if the port is not in use
 
-- name: Stop all processes using port 3000 if any exist
-  command: "kill -9 {{ item }}"
-  with_items: "{{ port_check.stdout_lines }}"
-  when: port_check.rc == 0 and port_check.stdout_lines | length > 0
+- name: stop any process running on port 3000
+  shell: fuser -k 3000/tcp || true
+  ignore_errors: yes
+
+
+# - name: Stop all processes using port 3000 if any exist
+#   command: "kill -9 {{ item }}"
+#   with_items: "{{ port_check.stdout_lines }}"
+#   when: port_check.rc == 0 and port_check.stdout_lines | length > 0
 
 - name: Pull Docker image for Flask app
   docker_image:
