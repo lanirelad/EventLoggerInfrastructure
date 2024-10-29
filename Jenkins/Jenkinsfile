@@ -202,17 +202,18 @@ pipeline
                 }
             }
         }
+    }
 
-        post 
+
+    post 
+    {
+        success 
         {
-            success 
-            {
-                echo 'Deployment completed successfully!'
-            }
-            failure 
-            {
-                echo 'Deployment failed. Check the logs for details.'
-            }
+            echo 'Deployment completed successfully!'
+        }
+        failure 
+        {
+            echo 'Deployment failed. Check the logs for details.'
         }
     }
 }
