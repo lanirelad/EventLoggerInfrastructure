@@ -2,6 +2,9 @@ version: '3.8'
 
 services:
   flask_app:
+    build:
+      context: ../app-repo  # Path to the app repository relative to the infrastructure repository
+      dockerfile: Dockerfile
     image: lanirelad/push-event-logger:latest
     container_name: flask_app_container
     ports:
