@@ -158,16 +158,6 @@ pipeline {
             }
         }
 
-        stage('Deploy Updated Docker Image') {
-            steps {
-                script {
-                    // Restart the service using docker-compose
-                    sh 'docker-compose up -d'
-                }
-            }
-        }
-    }
-
     post {
         success {
             echo 'Deployment completed successfully!'
