@@ -28,12 +28,22 @@ pipeline
 
         stage('Build Docker Image') 
         {
+            // steps 
+            // {
+            //     // build the Docker image
+            //     script 
+            //     {
+            //         sh 'docker build --no-cache -t $DOCKER_IMAGE .'
+            //     }
+            // }
             steps 
             {
-                // build the Docker image
+                // Remove any existing container and log directory, then build
                 script 
                 {
-                    sh 'docker build --no-cache -t $DOCKER_IMAGE .'
+                    // Stop and remove existing container
+                    sh 'docker-compose down || true' 
+                    sh 'docker-compose build --no-cache'
                 }
             }
         }

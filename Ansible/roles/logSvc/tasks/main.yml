@@ -38,6 +38,8 @@
     path: /var/log/push-event-logger 
     state: directory
     mode: '0755'
+    owner: root
+    group: docker
 
 #  ---- housekipping 
 
@@ -74,19 +76,19 @@
     name: flask-app
     image: lanirelad/push-event-logger:latest
     state: started
-    restart_policy: always
+    #  restart_policy: always
     volumes:
       - /var/log/push-event-logger:/workingDir  
     ports:
       - "3000:3000"  
 
-- name: Create systemd service for Flask app
-  template:
-    src: webhook.service.j2
-    dest: /etc/systemd/system/flask-app.service
+# - name: Create systemd service for Flask app
+#   template:
+#     src: webhook.service.j2
+#     dest: /etc/systemd/system/flask-app.service
 
-- name: Start and enable Flask app service
-  systemd:
-    name: flask-app.service
-    state: started
-    enabled: yes
+# - name: Start and enable Flask app service
+#   systemd:
+#     name: flask-app.service
+#     state: started
+#     enabled: yes
