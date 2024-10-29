@@ -10,7 +10,7 @@ services:
     # environment:
     #   - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}  #  secret
     volumes:
-      - flask-logs:/workingDir
+      - ./path/to/local/logs:/var/log/push-event-logger
 
 volumes:
   flask-logs:
