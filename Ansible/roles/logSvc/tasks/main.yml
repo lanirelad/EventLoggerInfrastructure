@@ -81,3 +81,4 @@
       - /var/log/push-event-logger:/workingDir  
     ports:
       - "3000:3000"
+    recreate: true
