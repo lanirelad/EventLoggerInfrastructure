@@ -1,7 +1,9 @@
-pipeline {
+pipeline 
+{
     agent any
 
-    environment {
+    environment 
+    {
         DOCKER_IMAGE = 'lanirelad/push-event-logger:latest'
         LINODE_INSTANCE_IP = '' // This will be populated further on the page
         FLASK_APP_REPO = 'https://github.com/lanirelad/push-event-logger.git'
@@ -13,39 +15,52 @@ pipeline {
         SUDO_PASSWORD = credentials('sudoPass')
     }
 
-    stages {
-        stage('Checkout Flask App Code') {
-            steps {
+    stages 
+    {
+        stage('Checkout Flask App Code') 
+        {
+            steps 
+            {
                 // Clone the Flask app repository
                 git branch: 'main', url: "${FLASK_APP_REPO}"
             }
         }
 
-        stage('Clean up Previous Container') {
-            steps {
-                script {
+        stage('Clean up Previous Container') 
+        {
+            steps 
+            {
+                script 
+                {
                     // Stop and remove any existing container
                     sh 'docker-compose down || true'
                 }
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
+        stage('Build Docker Image') 
+        {
+            steps 
+            {
+                script 
+                {
                     // Build the Docker image
                     sh 'docker build --no-cache -t $DOCKER_IMAGE .'
                 }
             }
         }
 
-        stage('Push Docker Image') {
-            steps {
-                script {
+        stage('Push Docker Image') 
+        {
+            steps 
+            {
+                script 
+                {
                     // Push the image to Docker Hub
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                       usernameVariable: 'DOCKER_USERNAME', 
-                                                      passwordVariable: 'DOCKER_PASSWORD')]) {
+                                                      passwordVariable: 'DOCKER_PASSWORD')]) 
+                    {
                         // Log in to Docker Hub
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                         // Push the image
@@ -55,24 +70,32 @@ pipeline {
             }
         }
 
-        stage('Checkout Infrastructure Code') {
-            steps {
+        stage('Checkout Infrastructure Code') 
+        {
+            steps 
+            {
                 // Clone the infrastructure repository
                 git branch: 'main', url: "${INFRA_REPO}"
             }
         }
 
-        stage('Terraform Init') {
-            steps {
-                dir('Terraform') {
+        stage('Terraform Init') 
+        {
+            steps 
+            {
+                dir('Terraform') 
+                {
                     sh 'terraform init'
                 }
             }
         }
 
-        stage('Terraform Plan') {
-            steps {
-                dir('Terraform') {
+        stage('Terraform Plan') 
+        {
+            steps 
+            {
+                dir('Terraform') 
+                {
                     sh '''
                     terraform plan -out=tfplan \
                     -var "linodeToken=${LINODE_API_TOKEN}" \
@@ -84,18 +107,25 @@ pipeline {
             }
         }
 
-        stage('Terraform Apply') {
-            steps {
-                dir('Terraform') {
+        stage('Terraform Apply') 
+        {
+            steps 
+            {
+                dir('Terraform') 
+                {
                     sh 'terraform apply -auto-approve tfplan'
                 }
             }
         }
 
-        stage('Debug Terraform Outputs') {
-            steps {
-                dir('Terraform') {
-                    script {
+        stage('Debug Terraform Outputs') 
+        {
+            steps 
+            {
+                dir('Terraform') 
+                {
+                    script 
+                    {
                         // Output all Terraform outputs and store IP in a file
                         sh 'terraform output -raw linode_public_ip > linode_ip.txt'
                     }
@@ -103,10 +133,14 @@ pipeline {
             }
         }
 
-        stage('Get Linode IP') {
-            steps {
-                dir('Terraform') {
-                    script {
+        stage('Get Linode IP') 
+        {
+            steps 
+            {
+                dir('Terraform') 
+                {
+                    script 
+                    {
                         LINODE_INSTANCE_IP = readFile('linode_ip.txt').trim()
                         echo "Linode Instance IP: ${LINODE_INSTANCE_IP}"
                     }
@@ -114,10 +148,14 @@ pipeline {
             }
         }
 
-        stage('Copy public SSH key') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) {
+        stage('Copy public SSH key') 
+        {
+            steps 
+            {
+                script 
+                {
+                    withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
+                    {
                         // Add host to known_hosts
                         sh """
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
@@ -132,10 +170,14 @@ pipeline {
             }
         }
 
-        stage('Create Ansible Inventory') {
-            steps {
-                dir('Ansible') {
-                    script {
+        stage('Create Ansible Inventory') 
+        {
+            steps 
+            {
+                dir('Ansible') 
+                {
+                    script 
+                    {
                         def inventoryContent = """
                         [linode]
                         ${LINODE_INSTANCE_IP} 
@@ -150,20 +192,27 @@ pipeline {
             }
         }
 
-        stage('Run Ansible Playbook') {
-            steps {
-                dir('Ansible') {
+        stage('Run Ansible Playbook') 
+        {
+            steps 
+            {
+                dir('Ansible') 
+                {
                     sh "ansible-playbook -i ./inventory.ini playbook.yml -vvv"
                 }
             }
         }
 
-    post {
-        success {
-            echo 'Deployment completed successfully!'
-        }
-        failure {
-            echo 'Deployment failed. Check the logs for details.'
+        post 
+        {
+            success 
+            {
+                echo 'Deployment completed successfully!'
+            }
+            failure 
+            {
+                echo 'Deployment failed. Check the logs for details.'
+            }
         }
     }
 }
