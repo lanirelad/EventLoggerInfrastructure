@@ -2,9 +2,6 @@ version: '3.8'
 
 services:
   flask_app:
-    build:
-      context: ../app-repo  # Path to the app repository relative to the infrastructure repository
-      dockerfile: Dockerfile
     image: lanirelad/push-event-logger:latest
     container_name: flask_app_container
     ports:
@@ -13,7 +10,7 @@ services:
     # environment:
     #   - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}  #  secret
     volumes:
-      - /var/log/push-event-logger:/workingDir # flask-logs:/workingDir
+      - flask-logs:/workingDir
 
 volumes:
   flask-logs:
