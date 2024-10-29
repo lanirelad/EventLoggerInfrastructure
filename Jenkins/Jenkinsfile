@@ -21,20 +21,8 @@ pipeline
         {
             steps 
             {
-                // Clone the Flask app repository
+                // clone the Flask app repository
                 git branch: 'main', url: "${FLASK_APP_REPO}"
-            }
-        }
-
-        stage('Clean up Previous Container') 
-        {
-            steps 
-            {
-                script 
-                {
-                    // Stop and remove any existing container
-                    sh 'docker-compose down || true'
-                }
             }
         }
 
@@ -42,9 +30,9 @@ pipeline
         {
             steps 
             {
+                // build the Docker image
                 script 
                 {
-                    // Build the Docker image
                     sh 'docker build --no-cache -t $DOCKER_IMAGE .'
                 }
             }
@@ -54,16 +42,17 @@ pipeline
         {
             steps 
             {
+                // psh the image to Docker Hub
                 script 
                 {
-                    // Push the image to Docker Hub
+                    // using withCredentials to bind Docker Hub credentials
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                       usernameVariable: 'DOCKER_USERNAME', 
                                                       passwordVariable: 'DOCKER_PASSWORD')]) 
                     {
-                        // Log in to Docker Hub
+                        // log in to Docker Hub
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                        // Push the image
+                        // push the image
                         sh 'docker push $DOCKER_IMAGE'
                     }
                 }
@@ -74,7 +63,7 @@ pipeline
         {
             steps 
             {
-                // Clone the infrastructure repository
+                // clone the infrastructure repository
                 git branch: 'main', url: "${INFRA_REPO}"
             }
         }
@@ -83,6 +72,7 @@ pipeline
         {
             steps 
             {
+                // initialize Terraform
                 dir('Terraform') 
                 {
                     sh 'terraform init'
@@ -94,13 +84,16 @@ pipeline
         {
             steps 
             {
+                // plan the Terraform changes
                 dir('Terraform') 
                 {
+                    
+                    
                     sh '''
-                    terraform plan -out=tfplan \
+                    terraform plan -out=tfplan\
                     -var "linodeToken=${LINODE_API_TOKEN}" \
                     -var "sshKey=${SSH_PUBLIC_KEY}" \
-                    -var "rootPass=${ROOT_PASSWORD}" \
+                    -var "rootPass=${ROOT_PASSWORD}"\
                     -var "githubToken=${GIT_TOKEN}"
                     '''
                 }
@@ -111,6 +104,7 @@ pipeline
         {
             steps 
             {
+                // apply the Terraform changes
                 dir('Terraform') 
                 {
                     sh 'terraform apply -auto-approve tfplan'
@@ -124,9 +118,8 @@ pipeline
             {
                 dir('Terraform') 
                 {
-                    script 
-                    {
-                        // Output all Terraform outputs and store IP in a file
+                    script {
+                        // output all Terraform outputs and store IP in a file
                         sh 'terraform output -raw linode_public_ip > linode_ip.txt'
                     }
                 }
@@ -156,12 +149,12 @@ pipeline
                 {
                     withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
                     {
-                        // Add host to known_hosts
+                        // add host to known_hosts
                         sh """
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
                         
-                        // Copy the public key to authorized_keys on the remote server
+                        // copy the public key to authorized_keys on the remote server
                         sh """
                         echo "\${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no -v root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
                         """
@@ -174,10 +167,11 @@ pipeline
         {
             steps 
             {
-                dir('Ansible') 
+                dir('Ansible')
                 {
                     script 
                     {
+                        // write the inventory dynamically
                         def inventoryContent = """
                         [linode]
                         ${LINODE_INSTANCE_IP} 
@@ -196,6 +190,7 @@ pipeline
         {
             steps 
             {
+                // run Ansible playbook to configure the Linode instance
                 dir('Ansible') 
                 {
                     sh "ansible-playbook -i ./inventory.ini playbook.yml -vvv"
@@ -203,7 +198,6 @@ pipeline
             }
         }
     }
-
 
     post 
     {
