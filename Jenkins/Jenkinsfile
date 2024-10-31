@@ -163,30 +163,34 @@ pipeline
                 }
             }
         }
-        
-        stage('Copy public SSH key') 
+
+        stage('Install sshpass') 
         {
             steps 
             {
                 script 
                 {
-                    withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
-                    {
-                        // Add host to known_hosts
-                        sh """
-                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
-                        """
-
-                        // Copy the public key to the remote server
-                        sh """
-                        echo "${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} bash -c '
-                            mkdir -p /home/jenkins/.ssh && \
-                            echo "${PUBLIC_SSH}" > /home/jenkins/.ssh/authorized_keys && \
-                            chmod 700 /home/jenkins/.ssh && \
-                            chmod 600 /home/jenkins/.ssh/authorized_keys
-                        '
-                        """
-                    }
+                    // Check if sshpass is installed, and install if not
+                    sh '''
+                    if ! command -v sshpass &> /dev/null; then
+                        echo "sshpass not found. Installing..."
+                        sudo apt-get update
+                        sudo apt-get install -y sshpass
+                    else
+                        echo "sshpass is already installed."
+                    fi
+                    '''
+                }
+            }
+        }
+        
+        stage('Copy public SSH key') {
+            steps {
+                script {
+                    // Copy the public SSH key to the Linode instance
+                    sh '''
+                    sshpass -p "your-password" ssh-copy-id -o StrictHostKeyChecking=no -i ${PUBLIC_KEY_PATH} ${SSH_USER}@${LINODE_IP}
+                    '''
                 }
             }
         }
