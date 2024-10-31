@@ -175,16 +175,13 @@ pipeline
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
                         
-                        // Create temporary file with the public key
-                        writeFile file: '/var/lib/jenkins/.ssh/temp_id_rsa.pub', text: "${SSH_PUBLIC_KEY}"
-
                         // Transfer public key using sshpass alternative
                         sh """
-                        ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat /var/lib/jenkins/.ssh/temp_id_rsa.pub >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+                        ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "
+                        mkdir -p ~/.ssh && chmod 700 ~/.ssh && 
+                        cat >> ~/.ssh/authorized_keys < /var/lib/jenkins/.ssh/id_rsa.pub && 
+                        chmod 600 ~/.ssh/authorized_keys"
                         """
-                        
-                        // Clean up temporary public key file
-                        sh 'rm /var/lib/jenkins/.ssh/temp_id_rsa.pub'
                     }
                 }
             }
