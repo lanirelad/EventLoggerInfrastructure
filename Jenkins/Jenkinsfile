@@ -175,12 +175,13 @@ pipeline
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
                         
-                        // Transfer public key using sshpass alternative
+                        // Transfer public key as jenkins user
                         sh """
                         ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "
-                        mkdir -p ~/.ssh && chmod 700 ~/.ssh && 
-                        cat >> ~/.ssh/authorized_keys < /var/lib/jenkins/.ssh/id_rsa.pub && 
-                        chmod 600 ~/.ssh/authorized_keys"
+                        sudo -u jenkins mkdir -p /home/jenkins/.ssh && 
+                        sudo -u jenkins chmod 700 /home/jenkins/.ssh && 
+                        cat >> /home/jenkins/.ssh/authorized_keys < /var/lib/jenkins/.ssh/id_rsa.pub && 
+                        sudo -u jenkins chmod 600 /home/jenkins/.ssh/authorized_keys"
                         """
                     }
                 }
