@@ -177,13 +177,13 @@ pipeline
                         """
 
                         // Copy the public key to the remote server
-                        sh '''
+                        sh """
                         echo "${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "
                             echo \"$(cat /var/lib/jenkins/.ssh/id_rsa.pub)\" >> /home/jenkins/.ssh/authorized_keys &&
                             mkdir -p /home/jenkins/.ssh &&
                             chmod 700 /home/jenkins/.ssh
                         "
-                        '''
+                        """
                         // Copy the public key to the remote server and append it to authorized_keys
                         //sh """
                         //scp -i /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}:/tmp/id_rsa.pub
