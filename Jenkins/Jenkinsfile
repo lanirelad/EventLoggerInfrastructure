@@ -47,8 +47,7 @@ pipeline
                 git branch: 'main', url: "${FLASK_APP_REPO}"
             }
         }
-        // Commented out stages for skipping
-        /*
+
         stage('Build Docker Image') 
         {
             steps 
@@ -148,7 +147,7 @@ pipeline
                 }
             }
         }
-        */
+        
         stage('Get Linode IP') 
         {
             steps 
