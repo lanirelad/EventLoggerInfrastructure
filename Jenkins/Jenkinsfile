@@ -13,7 +13,7 @@ pipeline
         ROOT_PASSWORD = credentials('rootPass')
         GIT_TOKEN = credentials('githubToken')
         SUDO_PASSWORD = credentials('sudoPass')
-        PUBLIC_SSH = credential('publicSSH')
+        PUBLIC_SSH = credentials('publicSSH')
     }
 
     stages 
