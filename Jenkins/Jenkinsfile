@@ -175,7 +175,18 @@ pipeline
                         sh """
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
-                        
+                        // Use a here-document to pass the password for scp
+                        sh '''
+                        {
+                            echo "${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "mkdir -p /home/jenkins/.ssh && chmod 700 /home/jenkins/.ssh"
+                            echo "${ROOT_PASSWORD}" | scp -o StrictHostKeyChecking=no /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}:/tmp/id_rsa.pub
+                        } <<< "${ROOT_PASSWORD}"
+                        '''
+
+                        // Append the public key to authorized_keys
+                        sh '''
+                        ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "cat /tmp/id_rsa.pub >> /home/jenkins/.ssh/authorized_keys && rm /tmp/id_rsa.pub"
+                        '''
                         // Copy the public key to the remote server and append it to authorized_keys
                         //sh """
                         //scp -i /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}:/tmp/id_rsa.pub
