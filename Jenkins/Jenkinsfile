@@ -181,7 +181,7 @@ pipeline
 
                         // Copy the public key to the remote server
                         sh """
-                        echo "${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} bash -c 'echo "${publicKey}" > /tmp/temp_public_key && \
+                        echo "${ROOT_PASSWORD}" | ssh root@${LINODE_INSTANCE_IP} bash -c 'echo "${publicKey}" > /tmp/temp_public_key && \
                         mv /tmp/temp_public_key /home/jenkins/.ssh/authorized_keys && \
                         mkdir -p /home/jenkins/.ssh && \
                         chmod 700 /home/jenkins/.ssh'
