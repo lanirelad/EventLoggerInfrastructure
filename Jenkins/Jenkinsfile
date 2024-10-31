@@ -17,6 +17,27 @@ pipeline
 
     stages 
     {
+        stage('Prepare SSH Directory') 
+        {
+            steps 
+            {
+                script 
+                {
+                    // Create .ssh directory and set permissions
+                    sh '''
+                    mkdir -p /var/lib/jenkins/.ssh
+                    chmod 700 /var/lib/jenkins/.ssh
+                    chown jenkins:jenkins /var/lib/jenkins/.ssh
+
+                    # Generate SSH key pair if not present
+                    if [ ! -f /var/lib/jenkins/.ssh/id_rsa ]; then
+                        ssh-keygen -t rsa -b 4096 -f /var/lib/jenkins/.ssh/id_rsa -N ""
+                    fi
+                    '''
+                }
+            }
+        }
+        
         stage('Checkout Flask App Code') 
         {
             steps 
