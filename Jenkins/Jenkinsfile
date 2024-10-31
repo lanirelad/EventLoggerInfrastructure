@@ -177,14 +177,11 @@ pipeline
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
 
-                        // Store the public key in a variable
-                        def publicKey = "${PUBLIC_SSH}"
-
                         // Copy the public key to the remote server
                         sh """
                         echo "${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} bash -c '
                             mkdir -p /home/jenkins/.ssh && \
-                            echo "${publicKey}" > /home/jenkins/.ssh/authorized_keys && \
+                            echo "${PUBLIC_SSH}" > /home/jenkins/.ssh/authorized_keys && \
                             chmod 700 /home/jenkins/.ssh && \
                             chmod 600 /home/jenkins/.ssh/authorized_keys
                         '
