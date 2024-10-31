@@ -175,13 +175,16 @@ pipeline
                         sh """
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
-                
-                        // Copy the public key to the remote server
+
+                        // Copy the public key to a temporary file on the remote server
                         sh """
-                        echo "${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} bash -c 'echo "\$(cat /var/lib/jenkins/.ssh/id_rsa.pub)" >> /home/jenkins/.ssh/authorized_keys && \
+                        echo "${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} bash -c 'cat > /tmp/temp_public_key && \
+                        mv /tmp/temp_public_key /home/jenkins/.ssh/authorized_keys && \
                         mkdir -p /home/jenkins/.ssh && \
                         chmod 700 /home/jenkins/.ssh'
-                        """
+                        """ << "EOF"
+                        $(cat /var/lib/jenkins/.ssh/id_rsa.pub)
+                        EOF
                     }
                 }
             }
