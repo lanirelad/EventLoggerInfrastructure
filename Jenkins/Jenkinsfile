@@ -147,7 +147,7 @@ pipeline
                 }
             }
         }
-
+        */
         stage('Get Linode IP') 
         {
             steps 
@@ -162,7 +162,7 @@ pipeline
                 }
             }
         }
-        */
+        
         stage('Copy public SSH key') 
         {
             steps 
