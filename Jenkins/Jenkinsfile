@@ -176,18 +176,26 @@ pipeline
                         ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
                         """
 
-                        // Copy the public key to the remote server
-                        sh """
-                        echo "${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no -v root@${LINODE_INSTANCE_IP} "echo \"$(cat /var/lib"/jenkins/.ssh/id_rsa.pub)\" >> /home/jenkins/.ssh/authorized_keys &&
-                            mkdir -p /home/jenkins/.ssh &&
-                            chmod 700 /home/jenkins/.ssh
-                        "
-                        """
-                        // Copy the public key to the remote server and append it to authorized_keys
-                        //sh """
-                        //scp -i /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}:/tmp/id_rsa.pub
-                        //"""
-                        //ssh -i /var/lib/jenkins/.ssh/id_rsa root@${LINODE_INSTANCE_IP} "cat /tmp/id_rsa.pub >> /home/jenkins/.ssh/authorized_keys && rm /tmp/id_rsa.pub"
+                        // Create an expect script to handle SSH with password
+                        sh '''
+                        cat <<EOF > /tmp/copy_ssh_key.exp
+                        #!/usr/bin/expect -f
+                        set timeout 20
+                        spawn ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP}
+                        expect "password:"
+                        send "${ROOT_PASSWORD}\\r"
+                        expect "$ "
+                        send "echo \"$(cat /var/lib/jenkins/.ssh/id_rsa.pub)\" >> /home/jenkins/.ssh/authorized_keys\\r"
+                        expect "$ "
+                        send "mkdir -p /home/jenkins/.ssh\\r"
+                        expect "$ "
+                        send "chmod 700 /home/jenkins/.ssh\\r"
+                        expect eof
+                        EOF
+
+                        chmod +x /tmp/copy_ssh_key.exp
+                        /tmp/copy_ssh_key.exp
+                        '''
                     }
                 }
             }
