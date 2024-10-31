@@ -178,7 +178,8 @@ pipeline
 
                         // Store the public key in a variable
                         def publicKey = sh(script: "cat /var/lib/jenkins/.ssh/id_rsa.pub", returnStdout: true).trim()
-
+                        sh """ echo "${publicKey}" """
+                        
                         // Copy the public key to the remote server
                         sh """
                         echo "${ROOT_PASSWORD}" | ssh root@${LINODE_INSTANCE_IP} bash -c 'echo "${publicKey}" > /tmp/temp_public_key && \
