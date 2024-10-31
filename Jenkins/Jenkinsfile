@@ -37,7 +37,7 @@ pipeline
                 }
             }
         }
-        
+
         stage('Checkout Flask App Code') 
         {
             steps 
@@ -168,17 +168,27 @@ pipeline
             {
                 script 
                 {
+                    // withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
+                    // {
+                    //     // add host to known_hosts
+                    //     sh """
+                    //     ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
+                    //     """
+                        
+                    //     // copy the public key to authorized_keys on the remote server
+                    //     sh """
+                    //     echo "\${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no -v root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
+                    //     """
                     withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
                     {
-                        // add host to known_hosts
-                        sh """
-                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
-                        """
-                        
-                        // copy the public key to authorized_keys on the remote server
-                        sh """
-                        echo "\${ROOT_PASSWORD}" | ssh -o StrictHostKeyChecking=no -v root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /var/lib/jenkins/.ssh/id_rsa.pub
-                        """
+                    // Add host to known_hosts and use ssh-copy-id to transfer the public key
+                    sh """
+                    ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
+                    """
+                    
+                    sh """
+                    echo ${ROOT_PASSWORD} | sshpass -p ${ROOT_PASSWORD} ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}
+                    """
                     }
                 }
             }
