@@ -179,9 +179,8 @@ pipeline
                         // Copy the public key to the remote server and append it to authorized_keys
                         sh """
                         scp -i /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}:/tmp/id_rsa.pub
-                        ssh -i /var/lib/jenkins/.ssh/id_rsa root@${LINODE_INSTANCE_IP} "cat /tmp/id_rsa.pub >> /home/jenkins/.ssh/authorized_keys && rm /tmp/id_rsa.pub"
                         """
-                        
+                        //ssh -i /var/lib/jenkins/.ssh/id_rsa root@${LINODE_INSTANCE_IP} "cat /tmp/id_rsa.pub >> /home/jenkins/.ssh/authorized_keys && rm /tmp/id_rsa.pub"
                     }
                 }
             }
