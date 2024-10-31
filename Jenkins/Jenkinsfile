@@ -171,14 +171,20 @@ pipeline
                     withCredentials([string(credentialsId: 'rootPass', variable: 'ROOT_PASSWORD')]) 
                     {
                         // Add host to known_hosts
-                sh """
-                ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
-                """
+                        sh """
+                        ssh-keyscan -H ${LINODE_INSTANCE_IP} >> /var/lib/jenkins/.ssh/known_hosts || true
+                        """
+                        
+                        // Create temporary file with the public key
+                        writeFile file: '/var/lib/jenkins/.ssh/temp_id_rsa.pub', text: "${SSH_PUBLIC_KEY}"
 
-                // Manually copy the public key by logging into the remote server and appending it to authorized_keys
-                sh """
-                ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '${SSH_PUBLIC_KEY}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
-                """s
+                        // Transfer public key using sshpass alternative
+                        sh """
+                        ssh -o StrictHostKeyChecking=no root@${LINODE_INSTANCE_IP} "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat /var/lib/jenkins/.ssh/temp_id_rsa.pub >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+                        """
+                        
+                        // Clean up temporary public key file
+                        sh 'rm /var/lib/jenkins/.ssh/temp_id_rsa.pub'
                     }
                 }
             }
