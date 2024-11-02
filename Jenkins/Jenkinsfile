@@ -152,7 +152,7 @@ pipeline
                 // apply the Terraform changes
                 dir('Terraform') 
                 {
-                    sh 'terraform apply -auto-approve tfplan -vvv'
+                    sh 'terraform apply -auto-approve tfplan'
                 }
             }
         }
