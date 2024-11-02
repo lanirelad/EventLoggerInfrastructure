@@ -38,7 +38,8 @@ pipeline
                 }
             }
         }
-
+        // temp
+        /*
         stage('Checkout Flask App Code') 
         {
             steps 
@@ -80,7 +81,7 @@ pipeline
                 }
             }
         }
-
+        */
         stage('Checkout Infrastructure Code') 
         {
             steps 
