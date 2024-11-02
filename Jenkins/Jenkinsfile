@@ -260,7 +260,7 @@ pipeline
                 {
                     retry(5) 
                     {
-                        sh 'curl -f http://${LINODE_INSTANCE_IP}:3000 || sleep 5'
+                        sh "curl -f http://${LINODE_INSTANCE_IP}:3000 || sleep 5"
                     }
                 }
             }
