@@ -41,16 +41,27 @@ pipeline
         
         stage('Checkout Flask App Code') 
         {
-            steps {
+            steps 
+            {
                 // Remove the existing repository if it exists
-                script {
-                    if (fileExists('/workingDir')) {
+                script 
+                {
+                    if (fileExists('/workingDir')) 
+                    {
                         sh 'rm /workingDir'
                     }
                 }
                 
                 // Clone the Flask app repository
                 git branch: 'main', url: "${FLASK_APP_REPO}"
+            }
+        }
+
+        stage('Validate /workingDir') 
+        {
+            steps 
+            {
+                sh 'ls -l /workingDir || echo "Directory not found: /workingDir"'
             }
         }
 
@@ -141,7 +152,7 @@ pipeline
                 // apply the Terraform changes
                 dir('Terraform') 
                 {
-                    sh 'terraform apply -auto-approve tfplan'
+                    sh 'terraform apply -auto-approve tfplan -vvv'
                 }
             }
         }
@@ -240,6 +251,20 @@ pipeline
                 }
             }
         }
+
+        stage('Wait for App Readiness') 
+        {
+            steps 
+            {
+                script 
+                {
+                    retry(5) 
+                    {
+                        sh 'curl -f http://${LINODE_INSTANCE_IP}:3000 || sleep 5'
+                    }
+                }
+            }
+}
     }
 
     post 
