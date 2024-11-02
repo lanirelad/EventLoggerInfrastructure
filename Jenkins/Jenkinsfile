@@ -252,18 +252,18 @@ pipeline
             }
         }
 
-        stage('Run Docker Compose') 
-        {
-            steps 
-            {
-                script 
-                {
-                    // Start the Flask app with Docker Compose
-                    sh 'docker-compose up -d'
-                }
+        // stage('Run Docker Compose') 
+        // {
+        //     steps 
+        //     {
+        //         script 
+        //         {
+        //             // Start the Flask app with Docker Compose
+        //             sh 'docker-compose up -d'
+        //         }
             
-            }
-        }
+        //     }
+        // }
 
         stage('Wait for App Readiness') 
         {
