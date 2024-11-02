@@ -55,7 +55,7 @@ pipeline
                 // build the Docker image
                 script 
                 {
-                    sh 'docker build --no-cache -t $DOCKER_IMAGE -f dockerfile .'
+                    sh 'docker build --no-cache -t $DOCKER_IMAGE -f dockerfile .\\workingDir\\'
                 }
             }
         }
