@@ -57,9 +57,14 @@ pipeline
         {
             steps 
             {    
-                dir('App')
-                // Clone the Flask app repository
-                git branch: 'main', url: "${FLASK_APP_REPO}"
+                script 
+                {
+                    // Build the Docker image from the 'App' directory
+                    dir('App') 
+                    {
+                        sh 'docker build --no-cache -t $DOCKER_IMAGE -f Dockerfile .'
+                    }
+                }
             }
         }
 
