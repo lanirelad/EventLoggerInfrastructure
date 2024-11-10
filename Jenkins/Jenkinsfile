@@ -59,10 +59,10 @@ pipeline
             {    
                 script 
                 {
-                    // Build the Docker image from the 'App' directory
+                    // Clone the Flask app repository into the 'App' directory
                     dir('App') 
                     {
-                        sh 'docker build --no-cache -t $DOCKER_IMAGE -f Dockerfile .'
+                        git branch: 'main', url: "${FLASK_APP_REPO}"
                     }
                 }
             }
@@ -75,7 +75,10 @@ pipeline
                 // build the Docker image
                 script 
                 {
-                    sh 'docker build --no-cache -t $DOCKER_IMAGE -f Dockerfile .'
+                    dir("App")
+                    {
+                        sh 'docker build --no-cache -t $DOCKER_IMAGE -f Dockerfile .'
+                    }
                 }
             }
         }
