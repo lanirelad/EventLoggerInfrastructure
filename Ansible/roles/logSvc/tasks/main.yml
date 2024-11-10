@@ -26,12 +26,12 @@
     state: started
     enabled: yes
 
-- name: Install Docker Compose
-  shell: |
-    curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
-  # args:
-  #   warn: false
+# - name: Install Docker Compose
+#   shell: |
+#     curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#     chmod +x /usr/local/bin/docker-compose
+#   # args:
+#   #   warn: false
 
 - name: Create a directory for logs on the host
   file:
@@ -41,8 +41,23 @@
     owner: root
     group: docker
 
-#  ---- housekipping 
+# Add the systemd service file from the Jinja2 template
+- name: Deploy systemd service for Flask app
+  template:
+    src: webhook.service.j2
+    dest: /etc/systemd/system/webhook.service
+    mode: '0644'
 
+- name: Reload systemd to pick up new service file
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start the Flask app systemd service
+  systemd:
+    name: webhook.service
+    state: started
+    enabled: yes
+    
 - name: Stop and disable Flask app service if running
   systemd:
     name: flask-app
