@@ -11,6 +11,13 @@ provider "linode" {
   token = var.linodeToken
 }
 
+data "linode_instance" "existing_instance" {
+  filter {
+    name   = "label"
+    values = ["flask-app-instance"]
+  }
+}
+
 # create a Linode instance
 resource "linode_instance" "flask_app" {
   count      = length(data.linode_instance.existing_instance) == 0 ? 1 : 0
