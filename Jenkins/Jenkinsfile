@@ -24,7 +24,10 @@ pipeline
             {
                 script 
                 {
-                    deleteDir() // clear the workspace
+                    // Delete everything except the 'Terraform' directory
+                    def dirsToDelete = ['.']
+                    dirsToDelete.remove('Terraform')
+                    deleteDir()
                 }
             }
         }
