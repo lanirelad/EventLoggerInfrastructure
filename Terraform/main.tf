@@ -20,6 +20,9 @@ resource "linode_instance" "flask_app" {
   root_pass  = var.rootPass               # Root password for the instance
   tags       = ["flask", "github-webhook"] # Tags for identifying the instance
   authorized_keys = [var.sshKey]          # SSH key for access
+  lifecycle {
+    prevent_destroy = true  # Prevent accidental destruction of the instance
+  }
 }
 
 
