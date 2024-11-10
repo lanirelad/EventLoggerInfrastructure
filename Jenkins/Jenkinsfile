@@ -75,7 +75,7 @@ pipeline
                 // build the Docker image
                 script 
                 {
-                    dir("App")
+                    dir("flask-app")
                     {
                         sh 'docker build --no-cache -t $DOCKER_IMAGE -f Dockerfile .'
                     }
@@ -83,201 +83,207 @@ pipeline
             }
         }
 
-//         stage('Push Docker Image') 
-//         {
-//             steps 
-//             {
-//                 // psh the image to Docker Hub
-//                 script 
-//                 {
-//                     // using withCredentials to bind Docker Hub credentials
-//                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
-//                                                       usernameVariable: 'DOCKER_USERNAME', 
-//                                                       passwordVariable: 'DOCKER_PASSWORD')]) 
-//                     {
-//                         // log in to Docker Hub
-//                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-//                         // push the image
-//                         sh 'docker push $DOCKER_IMAGE'
-//                     }
-//                 }
-//             }
-//         }
+        stage('Push Docker Image') 
+        {
+            steps 
+            {
+                // psh the image to Docker Hub
+                script 
+                {
+                    dir("flask-app")
+                    {
+                        // using withCredentials to bind Docker Hub credentials
+                        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
+                                                        usernameVariable: 'DOCKER_USERNAME', 
+                                                        passwordVariable: 'DOCKER_PASSWORD')]) 
+                        {
+                            // log in to Docker Hub
+                            sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                            // push the image
+                            sh 'docker push $DOCKER_IMAGE'
+                        }
+                    }
+                }
+            }
+        }
         
-//         stage('Checkout Infrastructure Code') 
-//         {
-//             steps 
-//             {
-//                 // clone the infrastructure repository
-//                 git branch: 'main', url: "${INFRA_REPO}"
-//             }
-//         }
+        stage('Checkout Infrastructure Code') 
+        {
+            steps 
+            {
+                dir("infrastructure")
+                {
+                    // clone the infrastructure repository
+                    git branch: 'main', url: "${INFRA_REPO}"
+                }
+            }
+        }
 
-//         stage('Terraform Init') 
-//         {
-//             steps 
-//             {
-//                 // initialize Terraform
-//                 dir('Terraform') 
-//                 {
-//                     sh 'terraform init'
-//                 }
-//             }
-//         }
+        stage('Terraform Init') 
+        {
+            steps 
+            {
+                // initialize Terraform
+                dir('infrastructure/Terraform') 
+                {
+                    sh 'terraform init'
+                }
+            }
+        }
 
-//         stage('Terraform Plan') 
-//         {
-//             steps 
-//             {
-//                 // plan the Terraform changes
-//                 dir('Terraform') 
-//                 {
+        stage('Terraform Plan') 
+        {
+            steps 
+            {
+                // plan the Terraform changes
+                dir('infrastructure/Terraform') 
+                {
                     
                     
-//                     sh '''
-//                     terraform plan -out=tfplan\
-//                     -var "linodeToken=${LINODE_API_TOKEN}" \
-//                     -var "sshKey=${SSH_PUBLIC_KEY}" \
-//                     -var "rootPass=${ROOT_PASSWORD}"\
-//                     -var "githubToken=${GIT_TOKEN}"
-//                     '''
-//                 }
-//             }
-//         }
+                    sh '''
+                    terraform plan -out=tfplan\
+                    -var "linodeToken=${LINODE_API_TOKEN}" \
+                    -var "sshKey=${SSH_PUBLIC_KEY}" \
+                    -var "rootPass=${ROOT_PASSWORD}"\
+                    -var "githubToken=${GIT_TOKEN}"
+                    '''
+                }
+            }
+        }
 
-//         stage('Terraform Apply') 
-//         {
-//             steps 
-//             {
-//                 // apply the Terraform changes
-//                 dir('Terraform') 
-//                 {
-//                     sh 'terraform apply -auto-approve tfplan'
-//                 }
-//             }
-//         }
+        stage('Terraform Apply') 
+        {
+            steps 
+            {
+                // apply the Terraform changes
+                dir('infrastructure/Terraform') 
+                {
+                    sh 'terraform apply -auto-approve tfplan'
+                }
+            }
+        }
 
-//         stage('Debug Terraform Outputs') 
-//         {
-//             steps 
-//             {
-//                 dir('Terraform') 
-//                 {
-//                     script {
-//                         // output all Terraform outputs and store IP in a file
-//                         sh 'terraform output -raw linode_public_ip > linode_ip.txt'
-//                     }
-//                 }
-//             }
-//         }
+        stage('Debug Terraform Outputs') 
+        {
+            steps 
+            {
+                dir('infrastructure/Terraform') 
+                {
+                    script {
+                        // output all Terraform outputs and store IP in a file
+                        sh 'terraform output -raw linode_public_ip > linode_ip.txt'
+                    }
+                }
+            }
+        }
         
-//         stage('Get Linode IP') 
-//         {
-//             steps 
-//             {
-//                 dir('Terraform') 
-//                 {
-//                     script 
-//                     {
-//                         LINODE_INSTANCE_IP = readFile('linode_ip.txt').trim()
-//                         echo "Linode Instance IP: ${LINODE_INSTANCE_IP}"
-//                     }
-//                 }
-//             }
-//         }
+        stage('Get Linode IP') 
+        {
+            steps 
+            {
+                dir('infrastructure/Terraform') 
+                {
+                    script 
+                    {
+                        LINODE_INSTANCE_IP = readFile('linode_ip.txt').trim()
+                        echo "Linode Instance IP: ${LINODE_INSTANCE_IP}"
+                    }
+                }
+            }
+        }
 
-//         stage('Install sshpass') 
-//         {
-//             steps 
-//             {
-//                 script 
-//                 {
-//                     // Check if sshpass is installed, and install if not
-//                     sh """
-//                     if ! command -v sshpass &> /dev/null; then
-//                         echo "sshpass not found. Installing..."
-//                         echo "${SUDO_PASSWORD}" | sudo -S apt-get update
-//                         echo "${SUDO_PASSWORD}" | sudo -S apt-get install -y sshpass
-//                     else
-//                         echo "sshpass is already installed."
-//                     fi
-//                     """
-//                 }
-//             }
-//         }
+        stage('Install sshpass') 
+        {
+            steps 
+            {
+                script 
+                {
+                    // Check if sshpass is installed, and install if not
+                    sh """
+                    if ! command -v sshpass &> /dev/null; then
+                        echo "sshpass not found. Installing..."
+                        echo "${SUDO_PASSWORD}" | sudo -S apt-get update
+                        echo "${SUDO_PASSWORD}" | sudo -S apt-get install -y sshpass
+                    else
+                        echo "sshpass is already installed."
+                    fi
+                    """
+                }
+            }
+        }
         
-//         stage('Copy public SSH key') {
-//             steps {
-//                 script {
-//                     // Copy the public SSH key to the Linode instance
-//                     sh """
-//                     sshpass -p "${ROOT_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}
-//                     """
-//                 }
-//             }
-//         }
+        stage('Copy public SSH key') {
+            steps {
+                script {
+                    // Copy the public SSH key to the Linode instance
+                    sh """
+                    sshpass -p "${ROOT_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}
+                    """
+                }
+            }
+        }
 
-//         stage('Create Ansible Inventory') 
-//         {
-//             steps 
-//             {
-//                 dir('Ansible')
-//                 {
-//                     script 
-//                     {
-//                         // write the inventory dynamically
-//                         def inventoryContent = """
-//                         [linode]
-//                         ${LINODE_INSTANCE_IP} 
+        stage('Create Ansible Inventory') 
+        {
+            steps 
+            {
+                dir('infrastructure/Ansible')
+                {
+                    script 
+                    {
+                        // write the inventory dynamically
+                        def inventoryContent = """
+                        [linode]
+                        ${LINODE_INSTANCE_IP} 
 
-//                         [linode:vars]
-//                         ansible_ssh_user=root
-//                         ansible_ssh_private_key_file=/var/lib/jenkins/.ssh/id_rsa
-//                         """
-//                         writeFile file: 'inventory.ini', text: inventoryContent
-//                     }
-//                 }
-//             }
-//         }
+                        [linode:vars]
+                        ansible_ssh_user=root
+                        ansible_ssh_private_key_file=/var/lib/jenkins/.ssh/id_rsa
+                        """
+                        writeFile file: 'inventory.ini', text: inventoryContent
+                    }
+                }
+            }
+        }
 
-//         stage('Run Ansible Playbook') 
-//         {
-//             steps 
-//             {
-//                 // run Ansible playbook to configure the Linode instance
-//                 dir('Ansible') 
-//                 {
-//                     sh "ansible-playbook -i ./inventory.ini playbook.yml -vvv"
-//                 }
-//             }
-//         }
+        stage('Run Ansible Playbook') 
+        {
+            steps 
+            {
+                // run Ansible playbook to configure the Linode instance
+                dir('infrastructure/Ansible') 
+                {
+                    sh "ansible-playbook -i ./inventory.ini playbook.yml -vvv"
+                }
+            }
+        }
 
-//         // stage('Run Docker Compose') 
-//         // {
-//         //     steps 
-//         //     {
-//         //         script 
-//         //         {
-//         //             // Start the Flask app with Docker Compose
-//         //             sh 'docker-compose up -d'
-//         //         }
+        // stage('Run Docker Compose') 
+        // {
+        //     steps 
+        //     {
+        //         script 
+        //         {
+        //             // Start the Flask app with Docker Compose
+        //             sh 'docker-compose up -d'
+        //         }
             
-//         //     }
-//         // }
+        //     }
+        // }
 
-//         stage('Wait for App Readiness') 
-//         {
-//             steps 
-//             {
-//                 script 
-//                 {
-//                     retry(5) 
-//                     {
-//                         sh "curl -f http://${LINODE_INSTANCE_IP}:3000 || sleep 5"
-//                     }
-//                 }
-//             }
-// }
+        stage('Wait for App Readiness') 
+        {
+            steps 
+            {
+                script 
+                {
+                    retry(5) 
+                    {
+                        sh "curl -f http://${LINODE_INSTANCE_IP}:3000 || sleep 5"
+                    }
+                }
+            }
+}
     }
 
     post 
