@@ -60,7 +60,7 @@ pipeline
                 script 
                 {
                     // Clone the Flask app repository into the 'App' directory
-                    dir('App') 
+                    dir('flask-app') 
                     {
                         git branch: 'main', url: "${FLASK_APP_REPO}"
                     }
@@ -257,19 +257,6 @@ pipeline
                 }
             }
         }
-
-        // stage('Run Docker Compose') 
-        // {
-        //     steps 
-        //     {
-        //         script 
-        //         {
-        //             // Start the Flask app with Docker Compose
-        //             sh 'docker-compose up -d'
-        //         }
-            
-        //     }
-        // }
 
         stage('Wait for App Readiness') 
         {
