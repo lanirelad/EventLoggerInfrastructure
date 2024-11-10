@@ -56,26 +56,10 @@ pipeline
         stage('Checkout Flask App Code') 
         {
             steps 
-            {
-                // Remove the existing repository if it exists
-                script 
-                {
-                    if (fileExists('/workingDir')) 
-                    {
-                        sh 'rm /workingDir'
-                    }
-                }
-                
+            {    
+                dir('App')
                 // Clone the Flask app repository
                 git branch: 'main', url: "${FLASK_APP_REPO}"
-            }
-        }
-
-        stage('Validate /workingDir') 
-        {
-            steps 
-            {
-                sh 'ls -l /workingDir || echo "Directory not found: /workingDir"'
             }
         }
 
@@ -114,14 +98,8 @@ pipeline
         
         stage('Checkout Infrastructure Code') 
         {
-            steps {
-                // Remove the existing repository if it exists
-                script {
-                    if (fileExists('/workingDir')) {
-                        sh 'rm -rf /workingDir'
-                    }
-                }
-                
+            steps 
+            {
                 // clone the infrastructure repository
                 git branch: 'main', url: "${INFRA_REPO}"
             }
