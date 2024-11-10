@@ -77,7 +77,7 @@
     name: flask-app
     image: lanirelad/push-event-logger:latest
     state: started
-    restart_policy: always
+    restart_policy: "no"
     network_mode: "host"
     recreate: true
     pull: yes
