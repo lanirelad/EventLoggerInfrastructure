@@ -57,46 +57,46 @@
     name: webhook.service
     state: started
     enabled: yes
-    
-- name: Stop and disable Flask app service if running
-  systemd:
-    name: flask-app
-    state: stopped
-    enabled: no
-  ignore_errors: yes
 
-- name: stop any process running on port 3000
-  shell: fuser -k 3000/tcp || true
-  ignore_errors: yes
+# - name: Stop and disable Flask app service if running
+#   systemd:
+#     name: flask-app
+#     state: stopped
+#     enabled: no
+#   ignore_errors: yes
 
-- name: Remove any existing Docker container named flask-app
-  docker_container:
-    name: flask-app
-    state: absent
+# - name: stop any process running on port 3000
+#   shell: fuser -k 3000/tcp || true
+#   ignore_errors: yes
 
-- name: Wait for port 3000 to be released
-  wait_for:
-    port: 3000
-    state: absent
-    timeout: 10
+# - name: Remove any existing Docker container named flask-app
+#   docker_container:
+#     name: flask-app
+#     state: absent
 
-- name: Pull Docker image for Flask app
-  docker_image:
-    name: lanirelad/push-event-logger
-    tag: latest
-    source: pull
-    force_source: yes
+# - name: Wait for port 3000 to be released
+#   wait_for:
+#     port: 3000
+#     state: absent
+#     timeout: 10
 
-- name: Run Flask app Docker container
-  docker_container:
-    name: flask-app
-    image: lanirelad/push-event-logger:latest
-    state: started
-    restart_policy: "no"
-    network_mode: "host"
-    recreate: true
-    pull: yes
-    volumes:
-      - /var/log/push-event-logger:/workingDir  
-    ports:
-      - "3000:3000"
+# - name: Pull Docker image for Flask app
+#   docker_image:
+#     name: lanirelad/push-event-logger
+#     tag: latest
+#     source: pull
+#     force_source: yes
+
+# - name: Run Flask app Docker container
+#   docker_container:
+#     name: flask-app
+#     image: lanirelad/push-event-logger:latest
+#     state: started
+#     restart_policy: "no"
+#     network_mode: "host"
+#     recreate: true
+#     pull: yes
+#     volumes:
+#       - /var/log/push-event-logger:/workingDir  
+#     ports:
+#       - "3000:3000"

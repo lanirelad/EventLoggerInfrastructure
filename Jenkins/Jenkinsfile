@@ -18,6 +18,17 @@ pipeline
 
     stages 
     {
+        stage('Clean Workspace') 
+        {
+            steps 
+            {
+                script 
+                {
+                    deleteDir() // clear the workspace
+                }
+            }
+        }
+
         stage('Prepare SSH Directory') 
         {
             steps 
