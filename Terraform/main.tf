@@ -11,16 +11,8 @@ provider "linode" {
   token = var.linodeToken
 }
 
-data "linode_instance" "existing_instance" {
-  filter {
-    name   = "label"
-    values = ["flask-app-instance"]
-  }
-}
-
 # create a Linode instance
 resource "linode_instance" "flask_app" {
-  count      = length(data.linode_instance.existing_instance) == 0 ? 1 : 0
   label      = "flask-app-instance"
   region     = "it-mil"                   # Choose the Linode region (example: us-east)
   type       = "g6-nanode-1"              # Linode instance type
@@ -28,9 +20,6 @@ resource "linode_instance" "flask_app" {
   root_pass  = var.rootPass               # Root password for the instance
   tags       = ["flask", "github-webhook"] # Tags for identifying the instance
   authorized_keys = [var.sshKey]          # SSH key for access
-  lifecycle {
-    prevent_destroy = true  # Prevent accidental destruction of the instance
-  }
 }
 
 
