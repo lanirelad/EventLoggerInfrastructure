@@ -13,6 +13,7 @@ provider "linode" {
 
 # create a Linode instance
 resource "linode_instance" "flask_app" {
+  count      = length(data.linode_instance.existing_instance) == 0 ? 1 : 0
   label      = "flask-app-instance"
   region     = "it-mil"                   # Choose the Linode region (example: us-east)
   type       = "g6-nanode-1"              # Linode instance type
