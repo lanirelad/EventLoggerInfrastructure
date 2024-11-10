@@ -8,7 +8,7 @@ Requires=docker.service
 StandardOutput=journal
 Restart=no {% endcomment %}
 ExecStartPre=/usr/bin/docker pull lanirelad/push-event-logger:latest
-ExecStart=/usr/bin/docker run --rm --network host \
+ExecStart=/usr/bin/docker run --name flask-app --network host \
     -v /var/log/push-event-logger:/workingDir \
     lanirelad/push-event-logger:latest
 StandardOutput=journal
