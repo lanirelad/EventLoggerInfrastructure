@@ -26,7 +26,7 @@ pipeline
                 {
                     // Delete everything except the 'Terraform' directory
                     def dirsToDelete = ['.']
-                    dirsToDelete.remove('Terraform')
+                    dirsToDelete.remove('infrastructure/Terraform')
                     deleteDir()
                 }
             }
@@ -218,6 +218,20 @@ pipeline
                     // Copy the public SSH key to the Linode instance
                     sh """
                     sshpass -p "${ROOT_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa.pub root@${LINODE_INSTANCE_IP}
+                    """
+                }
+            }
+        }
+
+        stage('Copy Flask App to Linode') 
+        {
+            steps 
+            {
+                script 
+                {
+                    // Copy the Flask app directory to the Linode instance
+                    sh """
+                    scp -r flask-app/* root@${LINODE_INSTANCE_IP}:/var/log/push-event-logger
                     """
                 }
             }
