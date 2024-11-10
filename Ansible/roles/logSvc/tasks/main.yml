@@ -70,6 +70,7 @@
     name: lanirelad/push-event-logger
     tag: latest
     source: pull
+    force_source: yes
 
 - name: Run Flask app Docker container
   docker_container:
@@ -79,6 +80,7 @@
     restart_policy: always
     network_mode: "host"
     recreate: true
+    force_update: yes
     volumes:
       - /var/log/push-event-logger:/workingDir  
     ports:

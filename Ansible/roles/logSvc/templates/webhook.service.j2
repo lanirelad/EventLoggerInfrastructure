@@ -1,11 +1,20 @@
 [Unit]
 Description=Flask App for Logging PUSH events
-After=network.target
+After=network.target docker.service
+Requires=docker.service
 
 [Service]
-ExecStart=/usr/bin/docker run --rm --network host lanirelad/push-event-logger
+{% comment %} ExecStart=/usr/bin/docker run --rm --network host lanirelad/push-event-logger
 StandardOutput=journal
-Restart=no
+Restart=no {% endcomment %}
+ExecStartPre=/usr/bin/docker pull lanirelad/push-event-logger:latest
+ExecStart=/usr/bin/docker run --rm --network host \
+    -v /var/log/push-event-logger:/workingDir \
+    lanirelad/push-event-logger:latest
+StandardOutput=journal
+Restart=always
+RestartSec=5
+
 
 [Install]
 WantedBy=multi-user.target
