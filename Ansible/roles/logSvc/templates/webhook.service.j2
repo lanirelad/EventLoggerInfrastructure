@@ -4,9 +4,6 @@ After=network.target docker.service
 Requires=docker.service
 
 [Service]
-{% comment %} ExecStart=/usr/bin/docker run --rm --network host lanirelad/push-event-logger
-StandardOutput=journal
-Restart=no {% endcomment %}
 ExecStartPre=/usr/bin/docker pull lanirelad/push-event-logger:latest
 ExecStart=/usr/bin/docker run --name flask-app --network host \
     -v /var/log/push-event-logger:/workingDir \
