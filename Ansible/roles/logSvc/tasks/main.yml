@@ -80,7 +80,7 @@
     restart_policy: always
     network_mode: "host"
     recreate: true
-    force_update: yes
+    pull: yes
     volumes:
       - /var/log/push-event-logger:/workingDir  
     ports:
