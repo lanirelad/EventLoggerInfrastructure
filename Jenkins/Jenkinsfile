@@ -22,16 +22,19 @@ pipeline
         {
             steps 
             {
-                script 
+                dir("infrastructure")
                 {
-                    // Check if the stash exists before attempting to unstash
-                    try 
+                    script 
                     {
-                        unstash 'terraform_folder'
-                    } 
-                    catch (Exception e) 
-                    {
-                        echo "No terraform_folder stash found, skipping unstash."
+                        // Check if the stash exists before attempting to unstash
+                        try 
+                        {
+                            unstash 'terraform_folder'
+                        } 
+                        catch (Exception e) 
+                        {
+                            echo "No terraform_folder stash found, skipping unstash."
+                        }
                     }
                 }
             }
@@ -210,7 +213,7 @@ pipeline
                 }
             }
         }
-        
+
         stage('Get Linode IP') 
         {
             steps 
