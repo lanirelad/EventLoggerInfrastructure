@@ -18,20 +18,20 @@ pipeline
 
     stages 
     {
-        stage('Clean Workspace') 
-        {
-            steps 
-            {
-                script 
-                {
-                    // Delete everything in the workspace except the 'terraform' folder
-                    sh '''#!/bin/bash
-                    # Find and remove everything in the workspace except the 'terraform' folder and '.terraform' directory
-                    find . -mindepth 1 -maxdepth 1 ! -name 'terraform' ! -name '.terraform' -exec rm -rf {} +
-                    '''
-                }
-            }
-        }
+        // stage('Clean Workspace') 
+        // {
+        //     steps 
+        //     {
+        //         script 
+        //         {
+        //             // Delete everything in the workspace except the 'terraform' folder
+        //             sh '''#!/bin/bash
+        //             # Find and remove everything in the workspace except the 'terraform' folder and '.terraform' directory
+        //             find . -mindepth 1 -maxdepth 1 ! -name 'terraform' ! -name '.terraform' -exec rm -rf {} +
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Prepare SSH Directory') 
         {
