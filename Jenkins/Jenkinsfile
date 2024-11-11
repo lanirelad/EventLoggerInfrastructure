@@ -207,10 +207,10 @@ pipeline
                 script 
                 {
                     // List the contents of the 'infrastructure' directory to ensure it's not empty
-                    sh "ls -alR infrastructure"
+                    //sh "ls -alR infrastructure"
 
                     // Attempt to stash the contents of the 'infrastructure' directory
-                    stash name: 'terraform_folder', includes: 'infrastructure/*', excludes: '**/*.log'
+                    stash(name: 'terraform-folder', includes: 'infrastructure/Terraform/**')
                 }
             }
         }
