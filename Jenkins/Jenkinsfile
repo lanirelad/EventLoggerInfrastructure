@@ -26,8 +26,8 @@ pipeline
                 {
                     // Delete everything in the workspace except the 'terraform' folder and '.terraform' directory
                     sh '''#!/bin/bash
-                    # Find and remove everything in the workspace except the 'terraform' folder and '.terraform' directory
-                    find . -mindepth 1 -maxdepth 1 ! -name 'terraform' ! -name '.terraform' -exec rm -rf {} +
+                    # Find and remove everything in the workspace except the 'infrastructure/terraform' folder and '.terraform' directory
+                    find . -mindepth 1 -maxdepth 1 ! -path './infrastructure/terraform' ! -name '.terraform' -exec rm -rf {} +
                     '''
                 }
             }
