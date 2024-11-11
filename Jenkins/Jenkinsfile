@@ -37,17 +37,7 @@ pipeline
             }
         }
 
-        stage('Stash Terraform Folder') 
-        {
-            steps 
-            {
-                script 
-                {
-                    // Stash the infrastructure folder before the clean up
-                    stash name: 'terraform_folder', includes: 'infrastructure/*'
-                }
-            }
-        }
+        
 
         // stage('Clean Workspace') 
         // {
@@ -205,6 +195,18 @@ pipeline
                         // output all Terraform outputs and store IP in a file
                         sh 'terraform output -raw linode_public_ip > linode_ip.txt'
                     }
+                }
+            }
+        }
+        
+        stage('Stash Terraform Folder') 
+        {
+            steps 
+            {
+                script 
+                {
+                    // Stash the infrastructure folder before the clean up
+                    stash name: 'terraform_folder', includes: 'infrastructure/*'
                 }
             }
         }
