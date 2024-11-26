@@ -178,19 +178,22 @@ pipeline
         {
             steps 
             {
-                // // apply the Terraform changes
-                // dir('infrastructure/Terraform/') 
-                // {
-                //     sh 'terraform apply -auto-approve tfplan'
-                // }
-                sh '''
-                terraform plan -out=tfplan
-                if grep -q "No changes. Infrastructure is up-to-date." tfplan; then
-                    echo "No changes to apply."
-                else
-                    terraform apply -auto-approve tfplan
-                fi
-                '''
+                dir('infrastructure/Terraform/')
+                {
+                    // // apply the Terraform changes
+                    // dir('infrastructure/Terraform/') 
+                    // {
+                    //     sh 'terraform apply -auto-approve tfplan'
+                    // }
+                    sh '''
+                    terraform plan -out=tfplan
+                    if grep -q "No changes. Infrastructure is up-to-date." tfplan; then
+                        echo "No changes to apply."
+                    else
+                        terraform apply -auto-approve tfplan
+                    fi
+                    '''
+                }
             }
         }
 
