@@ -186,7 +186,11 @@ pipeline
                     //     sh 'terraform apply -auto-approve tfplan'
                     // }
                     sh '''
-                    terraform plan -out=tfplan
+                    terraform plan -out=tfplan\
+                    -var "linodeToken=${LINODE_API_TOKEN}" \
+                    -var "sshKey=${SSH_PUBLIC_KEY}" \
+                    -var "rootPass=${ROOT_PASSWORD}"\
+                    -var "githubToken=${GIT_TOKEN}"
                     if grep -q "No changes. Infrastructure is up-to-date." tfplan; then
                         echo "No changes to apply."
                     else
