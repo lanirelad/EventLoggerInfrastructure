@@ -172,7 +172,7 @@ pipeline
                             -var "githubToken=${GIT_TOKEN}" > plan_output.txt
                         '''
                         // Save the plan output to a file to use later
-                        def planOutput = readFile('infrastructure/Terraform/plan_output.txt').trim()
+                        def planOutput = readFile('plan_output.txt').trim()
 
                         // Store the output as a build artifact or environment variable
                         currentBuild.description = planOutput
