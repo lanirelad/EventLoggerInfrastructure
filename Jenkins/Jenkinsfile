@@ -161,15 +161,22 @@ pipeline
                 // plan the Terraform changes
                 dir('infrastructure/Terraform/') 
                 {
-                    
-                    
-                    sh '''
-                    terraform plan -out=tfplan\
-                    -var "linodeToken=${LINODE_API_TOKEN}" \
-                    -var "sshKey=${SSH_PUBLIC_KEY}" \
-                    -var "rootPass=${ROOT_PASSWORD}"\
-                    -var "githubToken=${GIT_TOKEN}"
-                    '''
+                    script 
+                    {
+                        // Run terraform plan and store the output in a file
+                        sh '''
+                            terraform plan -out=tfplan \
+                            -var "linodeToken=${LINODE_API_TOKEN}" \
+                            -var "sshKey=${SSH_PUBLIC_KEY}" \
+                            -var "rootPass=${ROOT_PASSWORD}" \
+                            -var "githubToken=${GIT_TOKEN}" > plan_output.txt
+                        '''
+                        // Save the plan output to a file to use later
+                        def planOutput = readFile('infrastructure/Terraform/plan_output.txt').trim()
+
+                        // Store the output as a build artifact or environment variable
+                        currentBuild.description = planOutput
+                    }
                 }
             }
         }
@@ -180,23 +187,23 @@ pipeline
             {
                 dir('infrastructure/Terraform/')
                 {
-                    // // apply the Terraform changes
-                    // dir('infrastructure/Terraform/') 
-                    // {
-                    //     sh 'terraform apply -auto-approve tfplan'
-                    // }
-                    sh '''
-                    terraform plan -out=tfplan\
-                    -var "linodeToken=${LINODE_API_TOKEN}" \
-                    -var "sshKey=${SSH_PUBLIC_KEY}" \
-                    -var "rootPass=${ROOT_PASSWORD}"\
-                    -var "githubToken=${GIT_TOKEN}"
-                    if grep -q "No changes. Infrastructure is up-to-date." tfplan; then
-                        echo "No changes to apply."
-                    else
-                        terraform apply -auto-approve tfplan
-                    fi
-                    '''
+                    script 
+                    {
+                        // Read the plan output file
+                        def planOutput = readFile('infrastructure/Terraform/plan_output.txt').trim()
+
+                        // Check if the output contains the 'No changes' message
+                        if (planOutput.contains("No changes. Infrastructure is up-to-date.")) 
+                        {
+                            echo "No changes detected. Skipping terraform apply."
+                        } 
+                        else 
+                        {
+                            echo "Changes detected. Proceeding with terraform apply."
+                            // Apply the plan only if there are changes
+                            sh "terraform apply -auto-approve tfplan"
+                        }
+                    }
                 }
             }
         }
