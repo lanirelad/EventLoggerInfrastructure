@@ -147,7 +147,7 @@ pipeline
             steps 
             {
                 // initialize Terraform
-                dir('infrastructure/Terraform') 
+                dir('infrastructure/Terraform/') 
                 {
                     sh 'terraform init'
                 }
@@ -159,7 +159,7 @@ pipeline
             steps 
             {
                 // plan the Terraform changes
-                dir('infrastructure/Terraform') 
+                dir('infrastructure/Terraform/') 
                 {
                     
                     
@@ -178,11 +178,19 @@ pipeline
         {
             steps 
             {
-                // apply the Terraform changes
-                dir('infrastructure/Terraform') 
-                {
-                    sh 'terraform apply -auto-approve tfplan'
-                }
+                // // apply the Terraform changes
+                // dir('infrastructure/Terraform/') 
+                // {
+                //     sh 'terraform apply -auto-approve tfplan'
+                // }
+                sh '''
+                terraform plan -out=tfplan
+                if grep -q "No changes. Infrastructure is up-to-date." tfplan; then
+                    echo "No changes to apply."
+                else
+                    terraform apply -auto-approve tfplan
+                fi
+                '''
             }
         }
 
@@ -190,7 +198,7 @@ pipeline
         {
             steps 
             {
-                dir('infrastructure/Terraform') 
+                dir('infrastructure/Terraform/') 
                 {
                     script {
                         // output all Terraform outputs and store IP in a file
