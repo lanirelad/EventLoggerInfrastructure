@@ -190,7 +190,7 @@ pipeline
                     script 
                     {
                         // Read the plan output file
-                        def planOutput = readFile('infrastructure/Terraform/plan_output.txt').trim()
+                        def planOutput = readFile('plan_output.txt').trim()
 
                         // Check if the output contains the 'No changes' message
                         if (planOutput.contains("No changes. Infrastructure is up-to-date.")) 
